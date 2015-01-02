@@ -8,6 +8,8 @@
             <td>Name</td>
             <td>Cards average for game</td>
         </tr>
+        <thead>
+        <tbody>
         <#list results as result>
             <tr>
                 <td>${result.nr}</td>
@@ -15,7 +17,7 @@
                 <td>${result.cardGameAverage?string["0.#"]}</td>
             </tr>
         </#list>
-        <thead>
+        </tbody>
     </table>
 
 </@u.layout>

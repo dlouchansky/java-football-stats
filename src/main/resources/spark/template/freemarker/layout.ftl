@@ -2,8 +2,8 @@
     <html>
     <head>
         <title>${title}</title>
-        <link rel="stylesheet" href="kube.min.css"/>
-        <link rel="stylesheet" href="style.css"/>
+        <link rel="stylesheet" href="/kube.min.css"/>
+        <link rel="stylesheet" href="/style.css"/>
     </head>
     <body>
     <div class="content">
@@ -22,7 +22,7 @@
             </div>
             <div class="unit-80">
                 <div>
-                    <h3>${title}</h3>
+                    <h2>${title}</h2>
                     <#nested>
                 </div>
             </div>

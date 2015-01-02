@@ -2,7 +2,7 @@ package com.dlouchansky.pd2.application;
 
 
 import com.dlouchansky.pd2.persistence.DataRetrievalFacade;
-import com.dlouchansky.pd2.persistence.DataSavingFacade;
+import com.dlouchansky.pd2.persistence.DataCreationFacade;
 import com.dlouchansky.pd2.persistence.data.*;
 import com.dlouchansky.pd2.persistence.data.game.Game;
 import com.dlouchansky.pd2.persistence.data.game.GamePart;
@@ -23,11 +23,11 @@ import java.util.Map;
 
 public class XmlSavingServiceImpl implements XmlSavingService {
 
-    private final DataSavingFacade savingFacade;
+    private final DataCreationFacade savingFacade;
     private final XmlImporter xmlImporter;
     private final DataRetrievalFacade retrievalFacade;
 
-    public XmlSavingServiceImpl(DataSavingFacade savingFacade, XmlImporter xmlImporter, DataRetrievalFacade retrievalFacade) {
+    public XmlSavingServiceImpl(DataCreationFacade savingFacade, XmlImporter xmlImporter, DataRetrievalFacade retrievalFacade) {
         this.savingFacade = savingFacade;
         this.xmlImporter = xmlImporter;
         this.retrievalFacade = retrievalFacade;

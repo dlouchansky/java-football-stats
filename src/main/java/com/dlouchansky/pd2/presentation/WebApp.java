@@ -1,7 +1,9 @@
 package com.dlouchansky.pd2.presentation;
 
-import com.dlouchansky.pd2.application.StatsRetrievalService;
+import com.dlouchansky.pd2.application.StatsService;
 import com.dlouchansky.pd2.application.XmlSavingService;
+import com.dlouchansky.pd2.persistence.DataManipulationFacade;
+import com.dlouchansky.pd2.persistence.data.Team;
 import com.dlouchansky.pd2.presentation.dtos.RefereeDTO;
 import com.dlouchansky.pd2.presentation.dtos.TopDTO;
 import com.dlouchansky.pd2.presentation.dtos.TopGoalkeeperDTO;
@@ -24,20 +26,32 @@ import static spark.Spark.*;
 public class WebApp {
 
     private final XmlSavingService xmlService;
-    private final StatsRetrievalService statsService;
+    private final StatsService statsService;
+    private final DataManipulationFacade dataManipulationFacade;
 
     public WebApp(XmlSavingService xmlService,
-                  StatsRetrievalService statsService
+                  StatsService statsService,
+                  DataManipulationFacade dataManipulationFacade
     ) {
         this.xmlService = xmlService;
         this.statsService = statsService;
+        this.dataManipulationFacade = dataManipulationFacade;
     }
 
     public void initRoutes() {
 
         staticFileLocation("/static");
 
-        get("/", (req, res) -> new ModelAndView(new HashMap<String, Object>(), "home.ftl"), new FreeMarkerEngine());
+        get("/", (req, res) -> {
+            Map<String, Object> model = new HashMap<String, Object>();
+            if ("true".equals(req.cookie("truncated"))) {
+                res.cookie("truncated", "false");
+                model.put("truncated", true);
+            } else {
+                model.put("truncated", false);
+            }
+            return new ModelAndView(model, "home.ftl");
+        }, new FreeMarkerEngine());
 
         get("/top", (req, res) -> {
             Map<String, Object> model = new HashMap<>();
@@ -69,10 +83,13 @@ public class WebApp {
 
         get("/topTeamPlayers/:teamId", (req, res) -> {
             Map<String, Object> model = new HashMap<>();
-            List<TopGoalkeeperDTO> goalkeepers = statsService.getForTopGoalkeepers(req.params("teamId"));
+            Team team = statsService.getById(req.params("teamId"));
+            List<TopGoalkeeperDTO> goalkeepers = statsService.getForTopGoalkeepers(team);
+            List<TopPlayerDTO> players = statsService.getForTopPlayers(team);
+
             model.put("goalkeepers", goalkeepers);
-            List<TopPlayerDTO> players = statsService.getForTopPlayers(req.params("teamId"));
             model.put("players", players);
+            model.put("team", team.getName());
             return new ModelAndView(model, "topTeamPlayers.ftl");
         }, new FreeMarkerEngine());
 
@@ -83,7 +100,8 @@ public class WebApp {
         }, new FreeMarkerEngine());
 
         post("/truncate", (req, res) -> {
-            // todo truncate all tables
+            dataManipulationFacade.clearDatabase();
+            res.cookie("truncated", "true");
             res.redirect("/");
             return null;
         });
@@ -95,6 +113,7 @@ public class WebApp {
 
             reqParts.forEach(part -> {
                 if ("filesToUpload".equals(part.getName())) {
+                    //todo make it in job
                     MultiPartInputStreamParser.MultiPart partMulti = (MultiPartInputStreamParser.MultiPart) part;
                     File dest = new File("/tmp/xmls/" + System.currentTimeMillis() + partMulti.getContentDispositionFilename());
                     if (partMulti.getFile().renameTo(dest)) {
@@ -103,11 +122,8 @@ public class WebApp {
                     } else {
                         throw new RuntimeException("file not renamed");
                     }
-
-
                 }
             });
-
             res.redirect("/");
             return null;
         });

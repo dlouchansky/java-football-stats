@@ -6,7 +6,7 @@ import com.dlouchansky.pd2.persistence.data.game.*;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class DataSavingFacadeImpl implements DataSavingFacade {
+public class DataCreationFacadeImpl implements DataCreationFacade {
 
     private final ConcreteDAO.TeamDAO teamDAO;
     private final ConcreteDAO.VenueDAO venueDAO;
@@ -19,7 +19,7 @@ public class DataSavingFacadeImpl implements DataSavingFacade {
     private final ConcreteDAO.GoalPlayerDAO goalPlayerDAO;
     private final ConcreteDAO.TournamentDAO tournamentDAO;
 
-    public DataSavingFacadeImpl(
+    public DataCreationFacadeImpl(
             ConcreteDAO.VenueDAO venueDAO,
             ConcreteDAO.RefereeDAO refereeDAO,
             ConcreteDAO.TeamDAO teamDAO,

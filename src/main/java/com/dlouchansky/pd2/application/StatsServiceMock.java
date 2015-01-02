@@ -1,5 +1,6 @@
 package com.dlouchansky.pd2.application;
 
+import com.dlouchansky.pd2.persistence.data.Team;
 import com.dlouchansky.pd2.presentation.dtos.RefereeDTO;
 import com.dlouchansky.pd2.presentation.dtos.TopDTO;
 import com.dlouchansky.pd2.presentation.dtos.TopGoalkeeperDTO;
@@ -8,7 +9,7 @@ import com.dlouchansky.pd2.presentation.dtos.TopPlayerDTO;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatsRetrievalServiceMock implements StatsRetrievalService {
+public class StatsServiceMock implements StatsService {
     @Override
     public List<TopDTO> getForTop() {
         List<TopDTO> result = new ArrayList<>();
@@ -37,12 +38,12 @@ public class StatsRetrievalServiceMock implements StatsRetrievalService {
     }
 
     @Override
-    public List<TopPlayerDTO> getForTopPlayers(String teamId) {
+    public List<TopPlayerDTO> getForTopPlayers(Team team) {
         return getForTopPlayers();
     }
 
     @Override
-    public List<TopGoalkeeperDTO> getForTopGoalkeepers(String teamId) {
+    public List<TopGoalkeeperDTO> getForTopGoalkeepers(Team team) {
         return getForTopGoalkeepers();
     }
 
@@ -53,5 +54,10 @@ public class StatsRetrievalServiceMock implements StatsRetrievalService {
         result.add(new RefereeDTO(2, "ref2", Double.parseDouble("56.555")));
         result.add(new RefereeDTO(3, "ref3", Double.parseDouble("588.555")));
         return result;
+    }
+
+    @Override
+    public Team getById(String teamId) {
+        return new Team("teamName");
     }
 }

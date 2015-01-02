@@ -1,6 +1,6 @@
 package com.dlouchansky.pd2;
 
-import com.dlouchansky.pd2.application.StatsRetrievalServiceMock;
+import com.dlouchansky.pd2.application.StatsServiceMock;
 import com.dlouchansky.pd2.application.XmlSavingServiceImpl;
 import com.dlouchansky.pd2.persistence.*;
 import com.dlouchansky.pd2.persistence.data.Tournament;
@@ -16,19 +16,42 @@ public class App {
     public static Logger logger = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) {
+        //todo find normal DI tool
         ConcreteDAO.TournamentDAO tournamentDAO = new ConcreteDAO.TournamentDAO();
 
-        DataSavingFacade savingFacade = new DataSavingFacadeImpl(
-                new ConcreteDAO.VenueDAO(),
-                new ConcreteDAO.RefereeDAO(),
-                new ConcreteDAO.TeamDAO(),
-                new ConcreteDAO.PlayerDAO(),
-                new ConcreteDAO.GameCardDAO(),
-                new ConcreteDAO.GameDAO(),
-                new ConcreteDAO.GameRefereeDAO(),
-                new ConcreteDAO.GoalDAO(),
-                new ConcreteDAO.GoalPlayerDAO(),
+        ConcreteDAO.VenueDAO venueDAO = new ConcreteDAO.VenueDAO();
+        ConcreteDAO.RefereeDAO refereeDAO = new ConcreteDAO.RefereeDAO();
+        ConcreteDAO.TeamDAO teamDAO = new ConcreteDAO.TeamDAO();
+        ConcreteDAO.PlayerDAO playerDAO = new ConcreteDAO.PlayerDAO();
+        ConcreteDAO.GameCardDAO gameCardDAO = new ConcreteDAO.GameCardDAO();
+        ConcreteDAO.GameDAO gameDAO = new ConcreteDAO.GameDAO();
+        ConcreteDAO.GameRefereeDAO gameRefereeDAO = new ConcreteDAO.GameRefereeDAO();
+        ConcreteDAO.GoalDAO goalDAO = new ConcreteDAO.GoalDAO();
+        ConcreteDAO.GoalPlayerDAO goalPlayerDAO = new ConcreteDAO.GoalPlayerDAO();
+
+        DataCreationFacade savingFacade = new DataCreationFacadeImpl(
+                venueDAO,
+                refereeDAO,
+                teamDAO,
+                playerDAO,
+                gameCardDAO,
+                gameDAO,
+                gameRefereeDAO,
+                goalDAO,
+                goalPlayerDAO,
                 tournamentDAO
+        );
+
+        DataManipulationFacade manipulationFacade = new DataManipulationFacadeImpl(
+                teamDAO,
+                venueDAO,
+                refereeDAO,
+                playerDAO,
+                gameCardDAO,
+                gameDAO,
+                gameRefereeDAO,
+                goalDAO,
+                goalPlayerDAO
         );
 
         DataRetrievalFacade retrievalFacade = new DataRetrievalFacadeImpl(tournamentDAO);
@@ -39,7 +62,9 @@ public class App {
                         new XmlImporterImpl(),
                         retrievalFacade
                 ),
-                new StatsRetrievalServiceMock());
+                new StatsServiceMock(),
+                manipulationFacade
+        );
 
         webApp.initRoutes();
 

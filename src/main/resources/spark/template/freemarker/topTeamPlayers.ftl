@@ -1,5 +1,6 @@
 <#import "layout.ftl" as u>
-    <@u.layout title="Player stats for team ${team}">
+    <@u.layout title="${team} player stats">
+    <h3>Players</h3>
     <table>
         <thead>
         <tr>
@@ -12,6 +13,8 @@
             <td>Yellow cards</td>
             <td>Red cards</td>
         </tr>
+        <thead>
+        <tbody>
         <#list players as result>
             <tr>
                 <td>${result.number}</td>
@@ -24,17 +27,19 @@
                 <td>${result.redCards}</td>
             </tr>
         </#list>
-        <thead>
+        </tbody>
     </table>
-
+    <h3>Goalkeepers</h3>
     <table>
         <thead>
         <tr>
             <td>Number</td>
             <td>Name</td>
             <td>Missed goals</td>
-            <td>Average missed goals</td>s
+            <td>Average missed goals</td>
         </tr>
+        <thead>
+        <tbody>
         <#list goalkeepers as result>
             <tr>
                 <td>${result.number}</td>
@@ -43,6 +48,6 @@
                 <td>${result.missedGoalsAverage?string["0.#"]}</td>
             </tr>
         </#list>
-        <thead>
+        </tbody>
     </table>
-    </@u.layout>
+</@u.layout>

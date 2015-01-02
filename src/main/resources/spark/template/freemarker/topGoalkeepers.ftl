@@ -9,6 +9,8 @@
             <td>Team</td>
             <td>Average missed goals</td>
         </tr>
+        <thead>
+        <tbody>
         <#list results as result>
             <tr>
                 <td>${result.nr}</td>
@@ -17,7 +19,7 @@
                 <td>${result.missedGoalsAverage?string["0.#"]}</td>
             </tr>
         </#list>
-        <thead>
+        </tbody>
     </table>
 
 </@u.layout>

@@ -10,6 +10,8 @@
             <td>Goals</td>
             <td>Assists</td>
         </tr>
+        <thead>
+        <tbody>
         <#list results as result>
             <tr>
                 <td>${result.nr}</td>
@@ -19,7 +21,7 @@
                 <td>${result.assists}</td>
             </tr>
         </#list>
-        <thead>
+        </tbody>
     </table>
 
 </@u.layout>
