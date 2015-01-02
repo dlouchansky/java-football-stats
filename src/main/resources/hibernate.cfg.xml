@@ -1,0 +1,29 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="connection.url">jdbc:mysql://localhost:3306/pd2</property>
+        <property name="connection.username">bekas</property>
+        <property name="connection.password">password</property>
+        <property name="connection.pool_size">10</property>
+        <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="show_sql">true</property>
+        <property name="hbm2ddl.auto">update</property>
+        <property name="hibernate.connection.autocommit">false</property>
+        <property name="current_session_context_class">thread</property>
+
+        <mapping class="com.dlouchansky.pd2.persistence.data.Player" />
+        <mapping class="com.dlouchansky.pd2.persistence.data.Referee" />
+        <mapping class="com.dlouchansky.pd2.persistence.data.Team" />
+        <mapping class="com.dlouchansky.pd2.persistence.data.Tournament" />
+        <mapping class="com.dlouchansky.pd2.persistence.data.Venue" />
+        <mapping class="com.dlouchansky.pd2.persistence.data.game.Game" />
+        <mapping class="com.dlouchansky.pd2.persistence.data.game.GameCard" />
+        <mapping class="com.dlouchansky.pd2.persistence.data.game.GameReferee" />
+        <mapping class="com.dlouchansky.pd2.persistence.data.game.Goal" />
+        <mapping class="com.dlouchansky.pd2.persistence.data.game.GoalPlayer" />
+
+    </session-factory>
+</hibernate-configuration>
