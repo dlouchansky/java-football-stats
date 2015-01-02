@@ -4,7 +4,7 @@
         <div>
             <label>
                 Select .XML files to upload
-                <input type="file" name="filesToUpload" id="filesToUpload" accept=".xml" multiple>
+                <input type="file" name="filesToUpload" accept=".xml" multiple>
             </label>
         </div>
         <div>

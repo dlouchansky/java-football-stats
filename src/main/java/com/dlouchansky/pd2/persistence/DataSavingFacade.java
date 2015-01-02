@@ -6,6 +6,8 @@ import com.dlouchansky.pd2.persistence.data.game.*;
 import java.util.List;
 
 public interface DataSavingFacade {
+    Tournament createTournament(Integer year);
+
     Venue createVenue(String venue);
 
     Referee createReferee(String firstName, String lastName);

@@ -42,6 +42,13 @@ public class DataSavingFacadeImpl implements DataSavingFacade {
         this.tournamentDAO = tournamentDAO;
     }
 
+    @Override
+    public Tournament createTournament(Integer year) {
+        Tournament tournament = new Tournament(year);
+        tournamentDAO.add(tournament);
+        return tournament;
+    }
+
     public Venue createVenue(String venueName) {
         Venue newVenue = venueDAO.getByName(venueName);
         if (newVenue == null) {

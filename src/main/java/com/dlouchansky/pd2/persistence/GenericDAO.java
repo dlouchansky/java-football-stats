@@ -134,4 +134,8 @@ public class GenericDAO<T> {
         }
     }
 
+    public void deleteAll() {
+        getAll().forEach(this::delete);
+    }
+
 }

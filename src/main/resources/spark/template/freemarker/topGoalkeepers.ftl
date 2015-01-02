@@ -7,7 +7,7 @@
             <td>Nr.</td>
             <td>Name</td>
             <td>Team</td>
-            <td>Average missed goals</td>s
+            <td>Average missed goals</td>
         </tr>
         <#list results as result>
             <tr>
