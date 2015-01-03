@@ -22,9 +22,9 @@ public class StatsServiceMock implements StatsService {
     @Override
     public List<TopPlayerDTO> getForTopPlayers() {
         List<TopPlayerDTO> result = new ArrayList<>();
-        result.add(new TopPlayerDTO(1, "player 1", "team 1", 5, 2, 5, "0:01", 5, 5, 5));
-        result.add(new TopPlayerDTO(2, "player 2", "team 2", 4, 1, 5, "0:33", 5, 5, 5));
-        result.add(new TopPlayerDTO(3, "player 3", "team 3", 3, 0, 5, "11:11", 5, 5, 5));
+        result.add(new TopPlayerDTO(1, "player 1", "team 1", 5, 2, 5, "0:01", 5, 5, 5, 5));
+        result.add(new TopPlayerDTO(2, "player 2", "team 2", 4, 1, 5, "0:33", 5, 5, 5, 5));
+        result.add(new TopPlayerDTO(3, "player 3", "team 3", 3, 0, 5, "11:11", 5, 5, 5, 5));
         return result;
     }
 
@@ -59,5 +59,10 @@ public class StatsServiceMock implements StatsService {
     @Override
     public Team getById(String teamId) {
         return new Team("teamName");
+    }
+
+    @Override
+    public List<TopPlayerDTO> getForRudePlayers() {
+        return getForTopPlayers();
     }
 }

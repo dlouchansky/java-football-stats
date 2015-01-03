@@ -1,9 +1,11 @@
 package com.dlouchansky.pd2.persistence.data;
 
 import com.dlouchansky.pd2.persistence.data.game.Game;
+import com.dlouchansky.pd2.persistence.data.game.GamePlayer;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "players")
@@ -31,19 +33,15 @@ public class Player {
     @Enumerated(EnumType.ORDINAL)
     private Role role;
 
-    @ManyToMany(
-            mappedBy = "players",
-            targetEntity = Game.class,
-            cascade = { CascadeType.ALL }
-    )
-    private List<Game> games;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy="player")
+    private Set<GamePlayer> gamePlayers;
 
-    public List<Game> getGames() {
-        return games;
+    public Set<GamePlayer> getGamePlayers() {
+        return gamePlayers;
     }
 
-    public void setGames(List<Game> games) {
-        this.games = games;
+    public void setGamePlayers(Set<GamePlayer> gamePlayers) {
+        this.gamePlayers = gamePlayers;
     }
 
     public Player() {

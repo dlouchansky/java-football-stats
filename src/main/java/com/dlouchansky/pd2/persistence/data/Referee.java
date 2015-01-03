@@ -4,6 +4,7 @@ import com.dlouchansky.pd2.persistence.data.game.GameReferee;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="referees")
@@ -20,16 +21,16 @@ public class Referee {
     @Column(name="lastName")
     private String lastName;
 
-    public List<GameReferee> getGameReferees() {
+    public Set<GameReferee> getGameReferees() {
         return gameReferees;
     }
 
-    public void setGameReferees(List<GameReferee> gameReferees) {
+    public void setGameReferees(Set<GameReferee> gameReferees) {
         this.gameReferees = gameReferees;
     }
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy="referee")
-    private List<GameReferee> gameReferees;
+    private Set<GameReferee> gameReferees;
 
     public Integer getId() {
         return id;

@@ -4,7 +4,8 @@ import com.dlouchansky.pd2.persistence.data.*;
 import com.dlouchansky.pd2.persistence.data.game.*;
 
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DataCreationFacadeImpl implements DataCreationFacade {
 
@@ -18,6 +19,7 @@ public class DataCreationFacadeImpl implements DataCreationFacade {
     private final ConcreteDAO.GoalDAO goalDAO;
     private final ConcreteDAO.GoalPlayerDAO goalPlayerDAO;
     private final ConcreteDAO.TournamentDAO tournamentDAO;
+    private final ConcreteDAO.GamePlayerDAO gamePlayerDAO;
 
     public DataCreationFacadeImpl(
             ConcreteDAO.VenueDAO venueDAO,
@@ -29,7 +31,9 @@ public class DataCreationFacadeImpl implements DataCreationFacade {
             ConcreteDAO.GameRefereeDAO gameRefereeDAO,
             ConcreteDAO.GoalDAO goalDAO,
             ConcreteDAO.GoalPlayerDAO goalPlayerDAO,
-            ConcreteDAO.TournamentDAO tournamentDAO) {
+            ConcreteDAO.TournamentDAO tournamentDAO,
+            ConcreteDAO.GamePlayerDAO gamePlayerDAO
+    ) {
         this.venueDAO = venueDAO;
         this.refereeDAO = refereeDAO;
         this.teamDAO = teamDAO;
@@ -40,6 +44,7 @@ public class DataCreationFacadeImpl implements DataCreationFacade {
         this.goalDAO = goalDAO;
         this.goalPlayerDAO = goalPlayerDAO;
         this.tournamentDAO = tournamentDAO;
+        this.gamePlayerDAO = gamePlayerDAO;
     }
 
     @Override
@@ -86,27 +91,35 @@ public class DataCreationFacadeImpl implements DataCreationFacade {
             playerDAO.add(newPlayer);
             teamDAO.refresh(team);
         } else {
-            Stream<Player> playerInTeam = foundPlayers.stream().filter(p -> p.getTeam().equals(team));
-            if (playerInTeam.count() == 0) {
+            List<Player> playerInTeam = foundPlayers.stream().filter(p -> p.getTeam().getId().equals(team.getId())).collect(Collectors.toList());
+            if (playerInTeam.size() == 0) {
                 newPlayer = new Player(firstName, lastName, number, team, role);
                 playerDAO.add(newPlayer);
                 teamDAO.refresh(team);
             } else {
-                newPlayer = playerInTeam.iterator().next();
+                newPlayer = playerInTeam.get(0);
             }
         }
 
         return newPlayer;
     }
 
-    public Game createGame(Integer date, Integer watchers, Tournament tournament, Venue venue, List<Player> gamePlayers, List<Team> gameTeams) {
-        Game game = new Game(date, venue, watchers, tournament, gameTeams, gamePlayers);
+    public Game createGame(Integer date, Integer watchers, Tournament tournament, Venue venue, Set<Team> gameTeams) {
+        Game game = new Game(date, venue, watchers, tournament, gameTeams);
         gameDAO.add(game);
         tournamentDAO.refresh(tournament);
         venueDAO.refresh(venue);
-        gamePlayers.forEach(playerDAO::refresh);
         gameTeams.forEach(teamDAO::refresh);
         return game;
+    }
+
+    @Override
+    public GamePlayer createGamePlayer(Player player, Game game, Integer duration) {
+        GamePlayer gamePlayer = new GamePlayer(game, player, duration);
+        gamePlayerDAO.add(gamePlayer);
+        gameDAO.refresh(game);
+        playerDAO.refresh(player);
+        return gamePlayer;
     }
 
     public GameReferee createGameReferee(Referee referee, Game game, Boolean isMain) {
@@ -118,7 +131,7 @@ public class DataCreationFacadeImpl implements DataCreationFacade {
     }
 
     public GameCard createCard(Integer time, Player player, Game game) {
-        GameCard gameCard = gameCardDAO.getByPlayerAndGame(player.getId(), game.getId());
+        GameCard gameCard = gameCardDAO.getByPlayerAndGame(player, game);
         if (gameCard != null) {
             gameCard.setType(Card.Red);
             gameCardDAO.update(gameCard);

@@ -4,6 +4,7 @@ import com.dlouchansky.pd2.persistence.data.game.Game;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="teams")
@@ -20,12 +21,12 @@ public class Team {
     @ManyToMany(
             mappedBy = "teams",
             targetEntity = Game.class,
-            cascade = { CascadeType.ALL }
+            cascade = {}
     )
-    private List<Game> games;
+    private Set<Game> games;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy="team")
-    private List<Player> players;
+    private Set<Player> players;
 
     public Integer getId() {
         return id;
@@ -43,19 +44,19 @@ public class Team {
         this.name = name;
     }
 
-    public List<Game> getGames() {
+    public Set<Game> getGames() {
         return games;
     }
 
-    public void setGames(List<Game> games) {
+    public void setGames(Set<Game> games) {
         this.games = games;
     }
 
-    public List<Player> getPlayers() {
+    public Set<Player> getPlayers() {
         return players;
     }
 
-    public void setPlayers(List<Player> players) {
+    public void setPlayers(Set<Player> players) {
         this.players = players;
     }
 

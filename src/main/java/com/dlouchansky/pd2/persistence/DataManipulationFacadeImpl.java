@@ -11,6 +11,7 @@ public class DataManipulationFacadeImpl implements DataManipulationFacade {
     private final ConcreteDAO.GameRefereeDAO gameRefereeDAO;
     private final ConcreteDAO.GoalDAO goalDAO;
     private final ConcreteDAO.GoalPlayerDAO goalPlayerDAO;
+    private final ConcreteDAO.GamePlayerDAO gamePlayerDAO;
 
     public DataManipulationFacadeImpl(
             ConcreteDAO.TeamDAO teamDAO,
@@ -21,7 +22,8 @@ public class DataManipulationFacadeImpl implements DataManipulationFacade {
             ConcreteDAO.GameDAO gameDAO,
             ConcreteDAO.GameRefereeDAO gameRefereeDAO,
             ConcreteDAO.GoalDAO goalDAO,
-            ConcreteDAO.GoalPlayerDAO goalPlayerDAO
+            ConcreteDAO.GoalPlayerDAO goalPlayerDAO,
+            ConcreteDAO.GamePlayerDAO gamePlayerDAO
     ) {
         this.teamDAO = teamDAO;
         this.venueDAO = venueDAO;
@@ -32,18 +34,26 @@ public class DataManipulationFacadeImpl implements DataManipulationFacade {
         this.gameRefereeDAO = gameRefereeDAO;
         this.goalDAO = goalDAO;
         this.goalPlayerDAO = goalPlayerDAO;
+        this.gamePlayerDAO = gamePlayerDAO;
     }
 
     @Override
     public void clearDatabase() {
         gameRefereeDAO.deleteAll();
+        gamePlayerDAO.deleteAll();
         refereeDAO.deleteAll();
-        venueDAO.deleteAll();
+
+
         goalPlayerDAO.deleteAll();
         goalDAO.deleteAll();
-        teamDAO.deleteAll();
-        playerDAO.deleteAll();
+
+
         gameCardDAO.deleteAll();
         gameDAO.deleteAll();
+
+
+        teamDAO.deleteAll();
+        playerDAO.deleteAll();
+        venueDAO.deleteAll();
     }
 }

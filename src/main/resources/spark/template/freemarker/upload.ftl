@@ -12,4 +12,8 @@
         </div>
     </form>
 
+    <#if uploaded>
+        <h4>Uploaded!</h4>
+    </#if>
+
 </@u.layout>

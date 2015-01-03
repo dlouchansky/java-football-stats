@@ -2,6 +2,7 @@ package com.dlouchansky.pd2.persistence.data.game;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="goals")
@@ -24,7 +25,7 @@ public class Goal {
     private GamePart gamePart;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy="goal")
-    private List<GoalPlayer> goalPlayers;
+    private Set<GoalPlayer> goalPlayers;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "games_id")
@@ -69,11 +70,11 @@ public class Goal {
         this.gamePart = gamePart;
     }
 
-    public List<GoalPlayer> getGoalPlayers() {
+    public Set<GoalPlayer> getGoalPlayers() {
         return goalPlayers;
     }
 
-    public void setGoalPlayers(List<GoalPlayer> goalPlayers) {
+    public void setGoalPlayers(Set<GoalPlayer> goalPlayers) {
         this.goalPlayers = goalPlayers;
     }
 

@@ -12,6 +12,24 @@ public class ConcreteDAO {
 
 
     public static class GameDAO extends GenericDAO<Game> {
+        public Game getByDate(Integer date) {
+            Session session = null;
+            Game object = null;
+            try {
+                session = HibernateUtil.getSessionFactory().openSession();
+                Criteria criteria = session.createCriteria(Game.class);
+                object = (Game) criteria
+                        .add(Restrictions.eq("date", date))
+                        .uniqueResult();
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            } finally {
+                if (session != null && session.isOpen()) {
+                    session.close();
+                }
+            }
+            return object;
+        }
     }
 
     public static class GameRefereeDAO extends GenericDAO<GameReferee> {
@@ -24,15 +42,15 @@ public class ConcreteDAO {
     }
 
     public static class GameCardDAO extends GenericDAO<GameCard> {
-        public GameCard getByPlayerAndGame(Integer playerId, Integer gameId) {
+        public GameCard getByPlayerAndGame(Player player, Game game) {
             Session session = null;
             GameCard object = null;
             try {
                 session = HibernateUtil.getSessionFactory().openSession();
                 Criteria criteria = session.createCriteria(GameCard.class);
                 object = (GameCard) criteria
-                        .add(Restrictions.eq("players_id", playerId))
-                        .add(Restrictions.eq("games_id", gameId))
+                        .add(Restrictions.eq("player", player))
+                        .add(Restrictions.eq("game", game))
                         .uniqueResult();
             } catch (Exception e) {
                 logger.error(e.getMessage());
@@ -90,6 +108,9 @@ public class ConcreteDAO {
             return object;
         }
 
+    }
+
+    public static class GamePlayerDAO extends GenericDAO<GamePlayer> {
     }
 
     public static class VenueDAO extends GenericDAO<Venue> {

@@ -11,12 +11,13 @@
             <div class="unit-20">
                 <nav class="nav nav-stacked">
                     <ul>
-                        <li><a href="/">Home</a></li>
+                        <li><strong><a href="/">MPT PD2</a></strong></li>
                         <li><a href="/upload">Upload</a></li>
                         <li><a href="/top">Team top</a></li>
                         <li><a href="/topPlayers">Player top</a></li>
                         <li><a href="/topGoalkeepers">Goalkeeper top</a></li>
                         <li><a href="/referees">Referee top</a></li>
+                        <li><a href="/rude">Rude player top</a></li>
                     </ul>
                 </nav>
             </div>

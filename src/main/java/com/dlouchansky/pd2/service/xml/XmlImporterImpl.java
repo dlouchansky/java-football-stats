@@ -13,9 +13,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class XmlImporterImpl implements XmlImporter {
 
@@ -82,21 +80,43 @@ public class XmlImporterImpl implements XmlImporter {
         return xmlTeams;
     }
 
+    private Integer parseGameDuration() {
+        IterableNodeList domGoals = new IterableNodeList(docRoot.getElementsByTagName("VG"));
+        List<XmlGoal> xmlGoals = parseGoals(domGoals);
+        return xmlGoals
+                .stream()
+                .map(goal -> goal.time)
+                .reduce(60 * 60, (time1, time2) -> {
+                    return time1 > time2 ? time1 : time2;
+                });
+    }
+
     private XmlTeam parseTeamElement(Element el) {
+
         String name = el.getAttribute("Nosaukums");
 
         Element players = (Element) el.getElementsByTagName("Speletaji").item(0);
         IterableNodeList domPlayers = new IterableNodeList(players.getElementsByTagName("Speletajs"));
         List<XmlPlayer> xmlPlayers = parsePlayers(domPlayers);
 
+        Element goals = (Element) el.getElementsByTagName("Varti").item(0);
+        List<XmlGoal> xmlGoals = new ArrayList<>();
+        if (goals != null) {
+            IterableNodeList domGoals = new IterableNodeList(goals.getElementsByTagName("VG"));
+            xmlGoals.addAll(parseGoals(domGoals));
+        } else
+            xmlGoals.addAll(new ArrayList<>());
+
+        Integer gameDuration = parseGameDuration();
+
         Element gamePlayers = (Element) el.getElementsByTagName("Pamatsastavs").item(0);
         IterableNodeList domPlayerIds = new IterableNodeList(gamePlayers.getElementsByTagName("Speletajs"));
-        List<Integer> gamePlayerIds = parseGamePlayerIds(domPlayerIds);
+        Map<Integer, Integer> gamePlayerTimesByIds = parseGamePlayerIdsAndTime(domPlayerIds, gameDuration);
 
         Element switcherGamePlayers = (Element) el.getElementsByTagName("Mainas").item(0);
         if (switcherGamePlayers != null) {
             IterableNodeList domGamePlayers = new IterableNodeList(switcherGamePlayers.getElementsByTagName("Maina"));
-            gamePlayerIds.addAll(parseSwitcherGamePlayerIds(domGamePlayers));
+            gamePlayerTimesByIds.putAll(parseSwitcherGamePlayerIdsAndTime(domGamePlayers, gameDuration));
         }
 
         Element cards = (Element) el.getElementsByTagName("Sodi").item(0);
@@ -107,15 +127,8 @@ public class XmlImporterImpl implements XmlImporter {
         } else
             xmlCards.addAll(new ArrayList<>());
 
-        Element goals = (Element) el.getElementsByTagName("Varti").item(0);
-        List<XmlGoal> xmlGoals = new ArrayList<>();
-        if (goals != null) {
-            IterableNodeList domGoals = new IterableNodeList(goals.getElementsByTagName("VG"));
-            xmlGoals.addAll(parseGoals(domGoals));
-        } else
-            xmlGoals.addAll(new ArrayList<>());
 
-        return new XmlTeam(name, xmlPlayers, gamePlayerIds, xmlCards, xmlGoals);
+        return new XmlTeam(name, xmlPlayers, xmlCards, xmlGoals, gamePlayerTimesByIds);
     }
 
     private List<XmlPlayer> parsePlayers(IterableNodeList speletaji) {
@@ -132,16 +145,22 @@ public class XmlImporterImpl implements XmlImporter {
         return new XmlPlayer(firstName, lastName, number, role);
     }
 
-    private List<Integer> parseGamePlayerIds(IterableNodeList speletaji) {
-        List<Integer> xmlPlayerIds = new ArrayList<>();
-        speletaji.forEach(el -> xmlPlayerIds.add(Integer.parseInt(el.getAttribute("Nr"))));
-        return xmlPlayerIds;
+    private Map<Integer, Integer> parseGamePlayerIdsAndTime(IterableNodeList speletaji, Integer gameDuration) {
+        Map<Integer, Integer> xmlPlayerTimeByIds = new HashMap<>();
+        speletaji.forEach(el -> xmlPlayerTimeByIds.put(Integer.parseInt(el.getAttribute("Nr")), gameDuration));
+        return xmlPlayerTimeByIds;
     }
 
-    private List<Integer> parseSwitcherGamePlayerIds(IterableNodeList mainas) {
-        List<Integer> xmlPlayerIds = new ArrayList<>();
-        mainas.forEach(el -> xmlPlayerIds.add(Integer.parseInt(el.getAttribute("Nr2"))));
-        return xmlPlayerIds;
+    private Map<Integer, Integer> parseSwitcherGamePlayerIdsAndTime(IterableNodeList mainas, Integer gameDuration) {
+        Map<Integer, Integer> xmlPlayerTimeByIds = new HashMap<>();
+        mainas.forEach(el -> {
+            int nr1 = Integer.parseInt(el.getAttribute("Nr1"));
+            int nr2 = Integer.parseInt(el.getAttribute("Nr2"));
+            int laiks = parseTimeToSec(el.getAttribute("Laiks"));
+            xmlPlayerTimeByIds.put(nr1, laiks);
+            xmlPlayerTimeByIds.put(nr2, gameDuration - laiks);
+        });
+        return xmlPlayerTimeByIds;
     }
 
     private List<XmlCard> parseCards(IterableNodeList cards) {
@@ -182,10 +201,10 @@ public class XmlImporterImpl implements XmlImporter {
     }
 
     private Integer parseDateToSec(String formattedDate) throws ParseException {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         Date date = dateFormat.parse(formattedDate);
-        int time = (int) date.getTime() / 1000;
-        return time;
+        long time = (long) date.getTime() / 1000;
+        return (int) time;
     }
 
 

@@ -28,4 +28,5 @@ public interface StatsService {
 
     Team getById(String teamId);
 
+    List<TopPlayerDTO> getForRudePlayers();
 }

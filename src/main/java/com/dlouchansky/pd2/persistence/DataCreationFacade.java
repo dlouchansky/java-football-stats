@@ -4,6 +4,7 @@ import com.dlouchansky.pd2.persistence.data.*;
 import com.dlouchansky.pd2.persistence.data.game.*;
 
 import java.util.List;
+import java.util.Set;
 
 public interface DataCreationFacade {
     Tournament createTournament(Integer year);
@@ -16,7 +17,9 @@ public interface DataCreationFacade {
 
     Player createPlayer(String firstName, String lastName, Integer number, Team team, Role role);
 
-    Game createGame(Integer date, Integer watchers, Tournament tournament, Venue venue, List<Player> gamePlayers, List<Team> gameTeams);
+    Game createGame(Integer date, Integer watchers, Tournament tournament, Venue venue, Set<Team> gameTeams);
+
+    GamePlayer createGamePlayer(Player player, Game game, Integer duration);
 
     GameReferee createGameReferee(Referee referee, Game game, Boolean isMain);
 

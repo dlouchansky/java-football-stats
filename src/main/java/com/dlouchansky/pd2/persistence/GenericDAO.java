@@ -29,8 +29,12 @@ public class GenericDAO<T> {
             session.beginTransaction();
             session.save(object);
             session.getTransaction().commit();
+            logger.info("Object added: " + object.toString());
         } catch (Exception e) {
             logger.error(e.getMessage());
+            if (session != null) {
+                session.getTransaction().rollback();
+            }
         } finally {
             if (session != null && session.isOpen()) {
                 session.close();
@@ -47,6 +51,9 @@ public class GenericDAO<T> {
             session.getTransaction().commit();
         } catch (Exception e) {
             logger.error(e.getMessage());
+            if (session != null) {
+                session.getTransaction().rollback();
+            }
         } finally {
             if (session != null && session.isOpen()) {
                 session.close();
@@ -63,6 +70,9 @@ public class GenericDAO<T> {
             session.getTransaction().commit();
         } catch (Exception e) {
             logger.error(e.getMessage());
+            if (session != null) {
+                session.getTransaction().rollback();
+            }
         } finally {
             if (session != null && session.isOpen()) {
                 session.close();

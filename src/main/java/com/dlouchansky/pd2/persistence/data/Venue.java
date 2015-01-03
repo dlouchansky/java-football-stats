@@ -5,6 +5,7 @@ import com.dlouchansky.pd2.persistence.data.game.Game;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="venues")
@@ -23,13 +24,13 @@ public class Venue {
     }
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy="venue")
-    private List<Game> games;
+    private Set<Game> games;
 
-    public List<Game> getGames() {
+    public Set<Game> getGames() {
         return games;
     }
 
-    public void setGames(List<Game> games) {
+    public void setGames(Set<Game> games) {
         this.games = games;
     }
 

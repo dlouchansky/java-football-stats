@@ -3,6 +3,7 @@ package com.dlouchansky.pd2.presentation;
 import com.dlouchansky.pd2.application.StatsService;
 import com.dlouchansky.pd2.application.XmlSavingService;
 import com.dlouchansky.pd2.persistence.DataManipulationFacade;
+import com.dlouchansky.pd2.persistence.DataRetrievalFacade;
 import com.dlouchansky.pd2.persistence.data.Team;
 import com.dlouchansky.pd2.presentation.dtos.RefereeDTO;
 import com.dlouchansky.pd2.presentation.dtos.TopDTO;
@@ -10,6 +11,8 @@ import com.dlouchansky.pd2.presentation.dtos.TopGoalkeeperDTO;
 import com.dlouchansky.pd2.presentation.dtos.TopPlayerDTO;
 import com.dlouchansky.pd2.service.xml.data.XmlGame;
 import org.eclipse.jetty.util.MultiPartInputStreamParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
 import spark.template.freemarker.FreeMarkerEngine;
 
@@ -25,17 +28,21 @@ import static spark.Spark.*;
 
 public class WebApp {
 
+    private static Logger logger = LoggerFactory.getLogger(WebApp.class);
+
     private final XmlSavingService xmlService;
     private final StatsService statsService;
-    private final DataManipulationFacade dataManipulationFacade;
+    private final DataManipulationFacade dataManipulationFacade; // todo remove them from here
+    private final DataRetrievalFacade dataRetrievalFacade;
 
     public WebApp(XmlSavingService xmlService,
                   StatsService statsService,
-                  DataManipulationFacade dataManipulationFacade
-    ) {
+                  DataManipulationFacade dataManipulationFacade,
+                  DataRetrievalFacade dataRetrievalFacade) {
         this.xmlService = xmlService;
         this.statsService = statsService;
         this.dataManipulationFacade = dataManipulationFacade;
+        this.dataRetrievalFacade = dataRetrievalFacade;
     }
 
     public void initRoutes() {
@@ -81,6 +88,13 @@ public class WebApp {
             return new ModelAndView(model, "roughestReferees.ftl");
         }, new FreeMarkerEngine());
 
+        get("/rude", (req, res) -> {
+            Map<String, Object> model = new HashMap<>();
+            List<TopPlayerDTO> results = statsService.getForRudePlayers();
+            model.put("results", results);
+            return new ModelAndView(model, "rudePlayers.ftl");
+        }, new FreeMarkerEngine());
+
         get("/topTeamPlayers/:teamId", (req, res) -> {
             Map<String, Object> model = new HashMap<>();
             Team team = statsService.getById(req.params("teamId"));
@@ -94,9 +108,14 @@ public class WebApp {
         }, new FreeMarkerEngine());
 
         get("/upload", (req, res) -> {
-            Map<String, Object> attributes = new HashMap<>();
-            attributes.put("message", "Hello World!");
-            return new ModelAndView(attributes, "upload.ftl");
+            Map<String, Object> model = new HashMap<>();
+            if ("true".equals(req.cookie("uploaded"))) {
+                res.cookie("uploaded", "false");
+                model.put("uploaded", true);
+            } else {
+                model.put("uploaded", false);
+            }
+            return new ModelAndView(model, "upload.ftl");
         }, new FreeMarkerEngine());
 
         post("/truncate", (req, res) -> {
@@ -113,18 +132,28 @@ public class WebApp {
 
             reqParts.forEach(part -> {
                 if ("filesToUpload".equals(part.getName())) {
+
                     //todo make it in job
                     MultiPartInputStreamParser.MultiPart partMulti = (MultiPartInputStreamParser.MultiPart) part;
-                    File dest = new File("/tmp/xmls/" + System.currentTimeMillis() + partMulti.getContentDispositionFilename());
-                    if (partMulti.getFile().renameTo(dest)) {
-                        XmlGame game = xmlService.parseFile(dest);
-                        xmlService.saveGame(game);
-                    } else {
+                    String contentDispositionFilename = partMulti.getContentDispositionFilename();
+                    File dest = new File("/tmp/xmls/" + System.currentTimeMillis() + contentDispositionFilename);
+                    if (!partMulti.getFile().renameTo(dest)) {
                         throw new RuntimeException("file not renamed");
                     }
+
+                    XmlGame game = xmlService.parseFile(dest);
+
+                    if (dataRetrievalFacade.checkIfExists(game.date)) {
+                        logger.info("Game " + contentDispositionFilename + " already exists");
+                    } else {
+                        xmlService.saveGame(game);
+                        logger.info("Game " + contentDispositionFilename + " added");
+                    }
+
                 }
             });
-            res.redirect("/");
+            res.cookie("uploaded", "true");
+            res.redirect("/upload");
             return null;
         });
 

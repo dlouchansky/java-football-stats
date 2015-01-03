@@ -4,6 +4,7 @@ import com.dlouchansky.pd2.persistence.data.game.Game;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "tournaments")
@@ -23,7 +24,7 @@ public class Tournament {
     private Integer year;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy="tournament")
-    private List<Game> games;
+    private Set<Game> games;
 
     public Integer getId() {
         return id;
@@ -41,11 +42,11 @@ public class Tournament {
         this.year = year;
     }
 
-    public List<Game> getGames() {
+    public Set<Game> getGames() {
         return games;
     }
 
-    public void setGames(List<Game> games) {
+    public void setGames(Set<Game> games) {
         this.games = games;
     }
 
