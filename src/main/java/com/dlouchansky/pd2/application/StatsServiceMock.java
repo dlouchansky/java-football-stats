@@ -1,10 +1,10 @@
 package com.dlouchansky.pd2.application;
 
 import com.dlouchansky.pd2.persistence.data.Team;
-import com.dlouchansky.pd2.presentation.dtos.RefereeDTO;
-import com.dlouchansky.pd2.presentation.dtos.TopDTO;
-import com.dlouchansky.pd2.presentation.dtos.TopGoalkeeperDTO;
-import com.dlouchansky.pd2.presentation.dtos.TopPlayerDTO;
+import com.dlouchansky.pd2.application.dtos.RefereeDTO;
+import com.dlouchansky.pd2.application.dtos.TopDTO;
+import com.dlouchansky.pd2.application.dtos.TopGoalkeeperDTO;
+import com.dlouchansky.pd2.application.dtos.TopPlayerDTO;
 
 import java.util.ArrayList;
 import java.util.List;

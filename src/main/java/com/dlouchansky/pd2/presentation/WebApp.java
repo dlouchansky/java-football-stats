@@ -2,14 +2,13 @@ package com.dlouchansky.pd2.presentation;
 
 import com.dlouchansky.pd2.application.StatsService;
 import com.dlouchansky.pd2.application.XmlSavingService;
+import com.dlouchansky.pd2.application.dtos.RefereeDTO;
+import com.dlouchansky.pd2.application.dtos.TopDTO;
+import com.dlouchansky.pd2.application.dtos.TopGoalkeeperDTO;
+import com.dlouchansky.pd2.application.dtos.TopPlayerDTO;
 import com.dlouchansky.pd2.persistence.DataManipulationFacade;
 import com.dlouchansky.pd2.persistence.DataRetrievalFacade;
 import com.dlouchansky.pd2.persistence.data.Team;
-import com.dlouchansky.pd2.presentation.dtos.RefereeDTO;
-import com.dlouchansky.pd2.presentation.dtos.TopDTO;
-import com.dlouchansky.pd2.presentation.dtos.TopGoalkeeperDTO;
-import com.dlouchansky.pd2.presentation.dtos.TopPlayerDTO;
-import com.dlouchansky.pd2.service.xml.data.XmlGame;
 import org.eclipse.jetty.util.MultiPartInputStreamParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,25 +31,30 @@ public class WebApp {
 
     private final XmlSavingService xmlService;
     private final StatsService statsService;
-    private final DataManipulationFacade dataManipulationFacade; // todo remove them from here
+    private final DataManipulationFacade dataManipulationFacade;
     private final DataRetrievalFacade dataRetrievalFacade;
+    private final FreeMarkerEngine freeMarkerEngine;
 
     public WebApp(XmlSavingService xmlService,
                   StatsService statsService,
                   DataManipulationFacade dataManipulationFacade,
-                  DataRetrievalFacade dataRetrievalFacade) {
+                  DataRetrievalFacade dataRetrievalFacade,
+                  FreeMarkerEngine freeMarkerEngine
+    ) {
         this.xmlService = xmlService;
         this.statsService = statsService;
         this.dataManipulationFacade = dataManipulationFacade;
         this.dataRetrievalFacade = dataRetrievalFacade;
+        this.freeMarkerEngine = freeMarkerEngine;
     }
 
     public void initRoutes() {
 
         staticFileLocation("/static");
 
+
         get("/", (req, res) -> {
-            Map<String, Object> model = new HashMap<String, Object>();
+            Map<String, Object> model = new HashMap<>();
             if ("true".equals(req.cookie("truncated"))) {
                 res.cookie("truncated", "false");
                 model.put("truncated", true);
@@ -58,7 +62,7 @@ public class WebApp {
                 model.put("truncated", false);
             }
             return new ModelAndView(model, "home.ftl");
-        }, new FreeMarkerEngine());
+        }, freeMarkerEngine);
 
         get("/top", (req, res) -> {
             Map<String, Object> model = new HashMap<>();
@@ -97,7 +101,7 @@ public class WebApp {
 
         get("/topTeamPlayers/:teamId", (req, res) -> {
             Map<String, Object> model = new HashMap<>();
-            Team team = statsService.getById(req.params("teamId"));
+            Team team = dataRetrievalFacade.getById(req.params("teamId"));
             List<TopGoalkeeperDTO> goalkeepers = statsService.getForTopGoalkeepers(team);
             List<TopPlayerDTO> players = statsService.getForTopPlayers(team);
 
@@ -132,7 +136,6 @@ public class WebApp {
 
             reqParts.forEach(part -> {
                 if ("filesToUpload".equals(part.getName())) {
-
                     //todo make it in job
                     MultiPartInputStreamParser.MultiPart partMulti = (MultiPartInputStreamParser.MultiPart) part;
                     String contentDispositionFilename = partMulti.getContentDispositionFilename();
@@ -140,16 +143,11 @@ public class WebApp {
                     if (!partMulti.getFile().renameTo(dest)) {
                         throw new RuntimeException("file not renamed");
                     }
-
-                    XmlGame game = xmlService.parseFile(dest);
-
-                    if (dataRetrievalFacade.checkIfExists(game.date)) {
+                    boolean xmlAdded = xmlService.addXml(dest);
+                    if (!xmlAdded)
                         logger.info("Game " + contentDispositionFilename + " already exists");
-                    } else {
-                        xmlService.saveGame(game);
+                    else
                         logger.info("Game " + contentDispositionFilename + " added");
-                    }
-
                 }
             });
             res.cookie("uploaded", "true");

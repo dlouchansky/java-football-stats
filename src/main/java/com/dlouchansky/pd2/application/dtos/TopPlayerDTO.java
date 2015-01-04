@@ -1,4 +1,4 @@
-package com.dlouchansky.pd2.presentation.dtos;
+package com.dlouchansky.pd2.application.dtos;
 
 public class TopPlayerDTO {
 
