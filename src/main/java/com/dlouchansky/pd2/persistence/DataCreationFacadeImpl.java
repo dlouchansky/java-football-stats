@@ -1,5 +1,6 @@
 package com.dlouchansky.pd2.persistence;
 
+import com.dlouchansky.pd2.persistence.daos.ConcreteDAO;
 import com.dlouchansky.pd2.persistence.data.*;
 import com.dlouchansky.pd2.persistence.data.game.*;
 
@@ -131,21 +132,20 @@ public class DataCreationFacadeImpl implements DataCreationFacade {
     }
 
     public GameCard createCard(Integer time, Player player, Game game) {
-        GameCard gameCard = gameCardDAO.getByPlayerAndGame(player, game);
-        if (gameCard != null) {
-            gameCard.setType(Card.Red);
-            gameCardDAO.update(gameCard);
+        GameCard prevGameCard = gameCardDAO.getByPlayerAndGame(player, game);
+        GameCard gameCard;
+        if (prevGameCard != null) {
+            gameCard = new GameCard(Card.Red, player, game);
         } else {
             gameCard = new GameCard(Card.Yellow, player, game);
-            gameCardDAO.add(gameCard);
-            System.out.println(gameCard);
-            System.out.println(game.getCards());
-            gameDAO.refresh(game);
-            System.out.println(game.getCards());
-            playerDAO.refresh(player);
+
         }
 
-        return gameCard;
+        gameCardDAO.add(gameCard);
+        gameDAO.refresh(game);
+        playerDAO.refresh(player);
+
+        return prevGameCard;
     }
 
     public Goal createGoal(GoalType goalType, Integer time, GamePart gamePart, Game game) {
@@ -155,8 +155,8 @@ public class DataCreationFacadeImpl implements DataCreationFacade {
         return goal;
     }
 
-    public GoalPlayer addGoalPlayer(Goal goal, Player player, Boolean isScorer) {
-        GoalPlayer goalPlayer = new GoalPlayer(goal, player, isScorer);
+    public GoalPlayer addGoalPlayer(Goal goal, Player player, GoalPlayerType playerType) {
+        GoalPlayer goalPlayer = new GoalPlayer(goal, player, playerType);
         goalPlayerDAO.add(goalPlayer);
         playerDAO.refresh(player);
         return goalPlayer;

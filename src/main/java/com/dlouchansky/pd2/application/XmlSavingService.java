@@ -8,10 +8,6 @@ import java.io.File;
 
 public interface XmlSavingService {
 
-    XmlGame parseFile(File file);
-
-    Integer saveGame(XmlGame game);
-
-    Integer saveGame(XmlGame game, Tournament tournament);
+    boolean addXml(File file);
 
 }

@@ -1,27 +1,35 @@
 package com.dlouchansky.pd2.application;
 
+import com.dlouchansky.pd2.application.dtos.RefereeDTO;
+import com.dlouchansky.pd2.application.dtos.TopDTO;
+import com.dlouchansky.pd2.application.dtos.TopGoalkeeperDTO;
+import com.dlouchansky.pd2.application.dtos.TopPlayerDTO;
+import com.dlouchansky.pd2.persistence.StatsRetrievalFacade;
 import com.dlouchansky.pd2.persistence.data.Team;
-import com.dlouchansky.pd2.presentation.dtos.RefereeDTO;
-import com.dlouchansky.pd2.presentation.dtos.TopDTO;
-import com.dlouchansky.pd2.presentation.dtos.TopGoalkeeperDTO;
-import com.dlouchansky.pd2.presentation.dtos.TopPlayerDTO;
 
 import java.util.List;
 
 public class StatsServiceImpl implements StatsService {
+
+    private final StatsRetrievalFacade statsRetrievalFacade;
+
+    public StatsServiceImpl(StatsRetrievalFacade statsRetrievalFacade) {
+        this.statsRetrievalFacade = statsRetrievalFacade;
+    }
+
     @Override
     public List<TopDTO> getForTop() {
-        return null;
+        return statsRetrievalFacade.getTeamsByPoints();
     }
 
     @Override
     public List<TopPlayerDTO> getForTopPlayers() {
-        return null;
+        return statsRetrievalFacade.getPlayersByGoalsAndAssists(10);
     }
 
     @Override
     public List<TopGoalkeeperDTO> getForTopGoalkeepers() {
-        return null;
+        return statsRetrievalFacade.getGoalkeepersByAverageMissedGoals(5);
     }
 
     @Override
@@ -36,17 +44,12 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<RefereeDTO> getForRoughestReferees() {
-
-        return null;
+        return statsRetrievalFacade.getRefereesByAverageCardsPerGame(10);
     }
 
-    @Override
-    public Team getById(String teamId) {
-        return null;
-    }
 
     @Override
     public List<TopPlayerDTO> getForRudePlayers() {
-        return null;
+        return statsRetrievalFacade.getPlayersByReceivedCards();
     }
 }

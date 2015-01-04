@@ -13,10 +13,10 @@ public class GoalPlayer {
     @Column(name="id")
     private Integer id;
 
-    public GoalPlayer(Goal goal, Player player, Boolean isGoalScorer) {
+    public GoalPlayer(Goal goal, Player player, GoalPlayerType goalPlayerType) {
         this.goal = goal;
         this.player = player;
-        this.isGoalScorer = isGoalScorer;
+        this.goalPlayerType = goalPlayerType;
     }
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -27,8 +27,9 @@ public class GoalPlayer {
     @JoinColumn(name = "players_id")
     private Player player;
 
-    @Column(name="isGoalScorer")
-    private Boolean isGoalScorer;
+    @Column(name="role")
+    @Enumerated(EnumType.ORDINAL)
+    private GoalPlayerType goalPlayerType;
 
     public Integer getId() {
         return id;
@@ -54,12 +55,12 @@ public class GoalPlayer {
         this.player = player;
     }
 
-    public Boolean getIsGoalScorer() {
-        return isGoalScorer;
+    public GoalPlayerType getGoalPlayerType() {
+        return goalPlayerType;
     }
 
-    public void setIsGoalScorer(Boolean isGoalScorer) {
-        this.isGoalScorer = isGoalScorer;
+    public void setGoalPlayerType(GoalPlayerType goalPlayerType) {
+        this.goalPlayerType = goalPlayerType;
     }
 
     public GoalPlayer() {

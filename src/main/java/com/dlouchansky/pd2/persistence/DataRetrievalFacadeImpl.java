@@ -1,18 +1,21 @@
 package com.dlouchansky.pd2.persistence;
 
+import com.dlouchansky.pd2.persistence.daos.ConcreteDAO;
+import com.dlouchansky.pd2.persistence.data.Team;
 import com.dlouchansky.pd2.persistence.data.Tournament;
-import com.dlouchansky.pd2.persistence.data.game.GameCard;
-import com.dlouchansky.pd2.presentation.dtos.RefereeDTO;
+import com.dlouchansky.pd2.application.dtos.RefereeDTO;
 import org.hibernate.Session;
 
 public class DataRetrievalFacadeImpl implements DataRetrievalFacade {
 
     private final ConcreteDAO.TournamentDAO tournamentDAO;
     private final ConcreteDAO.GameDAO gameDAO;
+    private final ConcreteDAO.TeamDAO teamDAO;
 
-    public DataRetrievalFacadeImpl(ConcreteDAO.TournamentDAO tournamentDAO, ConcreteDAO.GameDAO gameDAO) {
+    public DataRetrievalFacadeImpl(ConcreteDAO.TournamentDAO tournamentDAO, ConcreteDAO.GameDAO gameDAO, ConcreteDAO.TeamDAO teamDAO) {
         this.tournamentDAO = tournamentDAO;
         this.gameDAO = gameDAO;
+        this.teamDAO = teamDAO;
     }
 
     @Override
@@ -42,4 +45,11 @@ public class DataRetrievalFacadeImpl implements DataRetrievalFacade {
     public boolean checkIfExists(Integer gameTime) {
         return gameDAO.getByDate(gameTime) != null;
     }
+
+    @Override
+    public Team getById(String teamId) {
+        return teamDAO.getById(Long.parseLong(teamId));
+    }
+
+
 }

@@ -1,5 +1,7 @@
 package com.dlouchansky.pd2.persistence;
 
+import com.dlouchansky.pd2.persistence.daos.ConcreteDAO;
+
 public class DataManipulationFacadeImpl implements DataManipulationFacade {
 
     private final ConcreteDAO.TeamDAO teamDAO;

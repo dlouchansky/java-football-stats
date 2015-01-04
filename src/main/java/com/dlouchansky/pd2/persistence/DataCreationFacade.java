@@ -27,5 +27,5 @@ public interface DataCreationFacade {
 
     Goal createGoal(GoalType goalType, Integer time, GamePart gamePart, Game game);
 
-    GoalPlayer addGoalPlayer(Goal goal, Player player, Boolean isScorer);
+    GoalPlayer addGoalPlayer(Goal goal, Player player, GoalPlayerType playerType);
 }

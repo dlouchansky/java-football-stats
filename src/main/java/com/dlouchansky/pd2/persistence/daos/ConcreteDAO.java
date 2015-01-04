@@ -1,5 +1,6 @@
-package com.dlouchansky.pd2.persistence;
+package com.dlouchansky.pd2.persistence.daos;
 
+import com.dlouchansky.pd2.persistence.HibernateUtil;
 import com.dlouchansky.pd2.persistence.data.*;
 import com.dlouchansky.pd2.persistence.data.game.*;
 import org.hibernate.Criteria;

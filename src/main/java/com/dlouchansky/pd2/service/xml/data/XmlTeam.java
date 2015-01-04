@@ -10,13 +10,15 @@ public class XmlTeam {
     public final Map<Integer, Integer> gamePlayerTimeByIds;
     public final List<XmlCard> cards;
     public final List<XmlGoal> goals;
+    public final Map<Integer, Integer> goalkeeperNumberByTime;
 
-    public XmlTeam(String name, List<XmlPlayer> players, List<XmlCard> cards, List<XmlGoal> goals, Map<Integer, Integer> gamePlayerTimeByIds) {
+    public XmlTeam(String name, List<XmlPlayer> players, List<XmlCard> cards, List<XmlGoal> goals, Map<Integer, Integer> gamePlayerTimeByNumber, Map<Integer, Integer> goalkeeperNumberByTime) {
         this.name = name;
+        this.goalkeeperNumberByTime = Collections.unmodifiableMap(goalkeeperNumberByTime);
         this.players = Collections.unmodifiableList(players);
         this.cards = Collections.unmodifiableList(cards);
         this.goals = Collections.unmodifiableList(goals);
-        this.gamePlayerTimeByIds = Collections.unmodifiableMap(gamePlayerTimeByIds);
+        this.gamePlayerTimeByIds = Collections.unmodifiableMap(gamePlayerTimeByNumber);
     }
 
     @Override

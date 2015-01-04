@@ -5,10 +5,12 @@ import com.dlouchansky.pd2.application.StatsServiceMock;
 import com.dlouchansky.pd2.application.XmlSavingService;
 import com.dlouchansky.pd2.application.XmlSavingServiceImpl;
 import com.dlouchansky.pd2.persistence.*;
+import com.dlouchansky.pd2.persistence.daos.ConcreteDAO;
 import com.dlouchansky.pd2.presentation.WebApp;
 import com.dlouchansky.pd2.service.xml.XmlImporterImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.File;
 
@@ -32,6 +34,8 @@ public class App {
 
         XmlImporterImpl xmlImporter = new XmlImporterImpl();
         StatsService statsService = new StatsServiceMock();
+
+        FreeMarkerEngine freeMarkerEngine = new FreeMarkerEngine();
 
         DataCreationFacade creationFacade = new DataCreationFacadeImpl(
                 venueDAO,
@@ -61,7 +65,8 @@ public class App {
 
         DataRetrievalFacade retrievalFacade = new DataRetrievalFacadeImpl(
                 tournamentDAO,
-                gameDAO
+                gameDAO,
+                teamDAO
         );
 
         XmlSavingService xmlService = new XmlSavingServiceImpl(
@@ -74,7 +79,8 @@ public class App {
                 xmlService,
                 statsService,
                 manipulationFacade,
-                retrievalFacade);
+                retrievalFacade,
+                freeMarkerEngine);
 
         webApp.initRoutes();
 

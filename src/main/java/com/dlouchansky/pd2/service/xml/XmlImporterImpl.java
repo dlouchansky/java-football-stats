@@ -14,6 +14,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class XmlImporterImpl implements XmlImporter {
 
@@ -86,49 +87,96 @@ public class XmlImporterImpl implements XmlImporter {
         return xmlGoals
                 .stream()
                 .map(goal -> goal.time)
-                .reduce(60 * 60, (time1, time2) -> {
-                    return time1 > time2 ? time1 : time2;
-                });
+                .reduce(60 * 60, (time1, time2) -> time1 > time2 ? time1 : time2);
     }
 
-    private XmlTeam parseTeamElement(Element el) {
+    private XmlTeam parseTeamElement(Element teamElement) {
+        String name = teamElement.getAttribute("Nosaukums");
+        Integer gameDuration = parseGameDuration();
+        List<XmlGoal> xmlGoals = getGoals(teamElement);
+        List<XmlCard> xmlCards = getCards(teamElement);
+        List<XmlPlayer> xmlPlayers = getPlayers(teamElement);
+        Map<Integer, Integer> gamePlayerTimesByNumbers = getGamePlayerNumbersWithTime(teamElement, gameDuration);
+        Map<Integer, Integer> goalkeeperNumbersByTime = getGoalkeepersOrderedByTime(teamElement, xmlPlayers, gamePlayerTimesByNumbers, gameDuration);
 
-        String name = el.getAttribute("Nosaukums");
+        return new XmlTeam(name, xmlPlayers, xmlCards, xmlGoals, gamePlayerTimesByNumbers, goalkeeperNumbersByTime);
+    }
 
-        Element players = (Element) el.getElementsByTagName("Speletaji").item(0);
+    private Map<Integer, Integer> getGamePlayerNumbersWithTime(Element team, Integer gameDuration) {
+        Element gamePlayers = (Element) team.getElementsByTagName("Pamatsastavs").item(0);
+        IterableNodeList domPlayerNumbers = new IterableNodeList(gamePlayers.getElementsByTagName("Speletajs"));
+        Map<Integer, Integer> gamePlayerTimesByNumbers = parseGamePlayerNumbersAndTime(domPlayerNumbers, gameDuration);
+
+        Element switcherGamePlayers = (Element) team.getElementsByTagName("Mainas").item(0);
+        if (switcherGamePlayers != null) {
+            IterableNodeList domChanges = new IterableNodeList(switcherGamePlayers.getElementsByTagName("Maina"));
+            gamePlayerTimesByNumbers.putAll(parseSwitcherGamePlayerIdsAndTime(domChanges, gameDuration));
+        }
+
+        return gamePlayerTimesByNumbers;
+    }
+
+    private List<XmlPlayer> getPlayers(Element team) {
+        Element players = (Element) team.getElementsByTagName("Speletaji").item(0);
         IterableNodeList domPlayers = new IterableNodeList(players.getElementsByTagName("Speletajs"));
-        List<XmlPlayer> xmlPlayers = parsePlayers(domPlayers);
+        return parsePlayers(domPlayers);
+    }
 
-        Element goals = (Element) el.getElementsByTagName("Varti").item(0);
+    private List<XmlGoal> getGoals(Element team) {
+        Element goals = (Element) team.getElementsByTagName("Varti").item(0);
         List<XmlGoal> xmlGoals = new ArrayList<>();
         if (goals != null) {
             IterableNodeList domGoals = new IterableNodeList(goals.getElementsByTagName("VG"));
             xmlGoals.addAll(parseGoals(domGoals));
-        } else
+        } else {
             xmlGoals.addAll(new ArrayList<>());
-
-        Integer gameDuration = parseGameDuration();
-
-        Element gamePlayers = (Element) el.getElementsByTagName("Pamatsastavs").item(0);
-        IterableNodeList domPlayerIds = new IterableNodeList(gamePlayers.getElementsByTagName("Speletajs"));
-        Map<Integer, Integer> gamePlayerTimesByIds = parseGamePlayerIdsAndTime(domPlayerIds, gameDuration);
-
-        Element switcherGamePlayers = (Element) el.getElementsByTagName("Mainas").item(0);
-        if (switcherGamePlayers != null) {
-            IterableNodeList domGamePlayers = new IterableNodeList(switcherGamePlayers.getElementsByTagName("Maina"));
-            gamePlayerTimesByIds.putAll(parseSwitcherGamePlayerIdsAndTime(domGamePlayers, gameDuration));
         }
+        return xmlGoals;
+    }
 
-        Element cards = (Element) el.getElementsByTagName("Sodi").item(0);
+    private List<XmlCard> getCards(Element team) {
+        Element cards = (Element) team.getElementsByTagName("Sodi").item(0);
         List<XmlCard> xmlCards = new ArrayList<>();
         if (cards != null) {
             IterableNodeList domCards = new IterableNodeList(cards.getElementsByTagName("Sods"));
             xmlCards.addAll(parseCards(domCards));
-        } else
+        } else {
             xmlCards.addAll(new ArrayList<>());
+        }
+        return xmlCards;
+    }
 
+    private Map<Integer, Integer> getGoalkeepersOrderedByTime(Element team, List<XmlPlayer> xmlPlayers, Map<Integer, Integer> gamePlayerTimesByNumber, Integer gameDuration) {
+        List<XmlPlayer> gameGoalkeepers = xmlPlayers
+                .stream()
+                .filter(xmlPlayer -> "V".equals(xmlPlayer.role) && gamePlayerTimesByNumber.get(xmlPlayer.number) != null)
+                .collect(Collectors.toList());
+        Map<Integer, Integer> goalkeeperNumbersByTime = new TreeMap<>();
+        if (gameGoalkeepers.size() == 1) {
+            goalkeeperNumbersByTime.put(gameDuration, gameGoalkeepers.get(0).number);
+        } else if (gameGoalkeepers.size() > 1) {
+            Element switcherGamePlayers = (Element) team.getElementsByTagName("Mainas").item(0);
+            if (switcherGamePlayers != null) {
+                IterableNodeList domChanges = new IterableNodeList(switcherGamePlayers.getElementsByTagName("Maina"));
+                gameGoalkeepers.forEach(goalkeeper -> {
+                    domChanges.forEach(el -> {
+                        Integer nr1 = Integer.parseInt(el.getAttribute("Nr1"));
+                        Integer nr2 = Integer.parseInt(el.getAttribute("Nr2"));
+                        Integer laiks = parseTimeToSec(el.getAttribute("Laiks"));
 
-        return new XmlTeam(name, xmlPlayers, xmlCards, xmlGoals, gamePlayerTimesByIds);
+                        if (nr1.equals(goalkeeper.number))
+                            goalkeeperNumbersByTime.put(laiks, goalkeeper.number);
+
+                        if (nr2.equals(goalkeeper.number))
+                            goalkeeperNumbersByTime.put(gameDuration, goalkeeper.number);
+                    });
+
+                    goalkeeperNumbersByTime.put(gameDuration, goalkeeper.number);
+                });
+            }
+        }
+
+        return goalkeeperNumbersByTime;
     }
 
     private List<XmlPlayer> parsePlayers(IterableNodeList speletaji) {
@@ -145,22 +193,31 @@ public class XmlImporterImpl implements XmlImporter {
         return new XmlPlayer(firstName, lastName, number, role);
     }
 
-    private Map<Integer, Integer> parseGamePlayerIdsAndTime(IterableNodeList speletaji, Integer gameDuration) {
-        Map<Integer, Integer> xmlPlayerTimeByIds = new HashMap<>();
-        speletaji.forEach(el -> xmlPlayerTimeByIds.put(Integer.parseInt(el.getAttribute("Nr")), gameDuration));
-        return xmlPlayerTimeByIds;
+    private Map<Integer, Integer> parseGamePlayerNumbersAndTime(IterableNodeList speletaji, Integer gameDuration) {
+        Map<Integer, Integer> xmlPlayerTimeByNumber = new HashMap<>();
+        speletaji.forEach(el -> xmlPlayerTimeByNumber.put(Integer.parseInt(el.getAttribute("Nr")), gameDuration));
+        return xmlPlayerTimeByNumber;
     }
 
     private Map<Integer, Integer> parseSwitcherGamePlayerIdsAndTime(IterableNodeList mainas, Integer gameDuration) {
-        Map<Integer, Integer> xmlPlayerTimeByIds = new HashMap<>();
+        Map<Integer, Integer> xmlPlayerTimeByNumber = new HashMap<>();
         mainas.forEach(el -> {
             int nr1 = Integer.parseInt(el.getAttribute("Nr1"));
             int nr2 = Integer.parseInt(el.getAttribute("Nr2"));
             int laiks = parseTimeToSec(el.getAttribute("Laiks"));
-            xmlPlayerTimeByIds.put(nr1, laiks);
-            xmlPlayerTimeByIds.put(nr2, gameDuration - laiks);
+            if (xmlPlayerTimeByNumber.get(nr1) == null) {
+                xmlPlayerTimeByNumber.put(nr1, laiks);
+            } else {
+                xmlPlayerTimeByNumber.put(nr1, xmlPlayerTimeByNumber.get(nr1) + (gameDuration - laiks));
+            }
+
+            if (xmlPlayerTimeByNumber.get(nr2) == null) {
+                xmlPlayerTimeByNumber.put(nr2, gameDuration - laiks);
+            } else {
+                xmlPlayerTimeByNumber.put(nr2, xmlPlayerTimeByNumber.get(nr2) - (gameDuration - laiks));
+            }
         });
-        return xmlPlayerTimeByIds;
+        return xmlPlayerTimeByNumber;
     }
 
     private List<XmlCard> parseCards(IterableNodeList cards) {

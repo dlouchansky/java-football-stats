@@ -1,7 +1,8 @@
 package com.dlouchansky.pd2.persistence;
 
+import com.dlouchansky.pd2.persistence.data.Team;
 import com.dlouchansky.pd2.persistence.data.Tournament;
-import com.dlouchansky.pd2.presentation.dtos.RefereeDTO;
+import com.dlouchansky.pd2.application.dtos.RefereeDTO;
 
 public interface DataRetrievalFacade {
 
@@ -10,4 +11,6 @@ public interface DataRetrievalFacade {
     RefereeDTO getRefereeTop();
 
     boolean checkIfExists(Integer gameTime);
+
+    Team getById(String teamId);
 }

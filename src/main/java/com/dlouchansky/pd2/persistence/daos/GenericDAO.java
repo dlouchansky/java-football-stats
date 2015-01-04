@@ -1,5 +1,6 @@
-package com.dlouchansky.pd2.persistence;
+package com.dlouchansky.pd2.persistence.daos;
 
+import com.dlouchansky.pd2.persistence.HibernateUtil;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
