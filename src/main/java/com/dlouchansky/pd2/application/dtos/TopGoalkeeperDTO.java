@@ -5,8 +5,8 @@ public class TopGoalkeeperDTO {
     private String name;
     private String team;
     private Double missedGoalsAverage;
-    private Integer number;
     private Integer missedGoals;
+    private Integer gameCount;
 
     public Integer getNr() {
         return nr;
@@ -24,21 +24,20 @@ public class TopGoalkeeperDTO {
         return missedGoalsAverage;
     }
 
-    public Integer getNumber() {
-        return number;
-    }
-
     public Integer getMissedGoals() {
         return missedGoals;
     }
 
-    public TopGoalkeeperDTO(Integer nr, String name, String team, Double missedGoalsAverage, Integer number, Integer missedGoals) {
+    public Integer getGameCount() {
+        return gameCount;
+    }
 
+    public TopGoalkeeperDTO(Integer nr, String name, String team, Double missedGoalsAverage, Integer missedGoals, Integer gameCount) {
         this.nr = nr;
         this.name = name;
         this.team = team;
         this.missedGoalsAverage = missedGoalsAverage;
-        this.number = number;
         this.missedGoals = missedGoals;
+        this.gameCount = gameCount;
     }
 }

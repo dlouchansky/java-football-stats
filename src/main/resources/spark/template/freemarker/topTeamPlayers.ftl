@@ -17,7 +17,7 @@
         <tbody>
         <#list players as result>
             <tr>
-                <td>${result.number}</td>
+                <td>${result.nr}</td>
                 <td>${result.name}</td>
                 <td>${result.gamesPlayed}</td>
                 <td>${result.minutes}</td>
@@ -36,15 +36,17 @@
             <td>Number</td>
             <td>Name</td>
             <td>Missed goals</td>
+            <td>Game count</td>
             <td>Average missed goals</td>
         </tr>
         <thead>
         <tbody>
         <#list goalkeepers as result>
             <tr>
-                <td>${result.number}</td>
+                <td>${result.nr}</td>
                 <td>${result.name}</td>
                 <td>${result.missedGoals}</td>
+                <td>${result.gameCount}</td>
                 <td>${result.missedGoalsAverage?string["0.#"]}</td>
             </tr>
         </#list>

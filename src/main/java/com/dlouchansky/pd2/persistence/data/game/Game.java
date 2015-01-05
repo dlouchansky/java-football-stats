@@ -13,12 +13,11 @@ import java.util.Set;
 @Entity
 @Table(name="games")
 public class Game {
-    public Game(Integer date, Venue venue, Integer watchers, Tournament tournament, Set<Team> teams) {
+    public Game(Integer date, Venue venue, Integer watchers, Tournament tournament) {
         this.date = date;
         this.venue = venue;
         this.watchers = watchers;
         this.tournament = tournament;
-        this.teams = teams;
     }
 
     @Id
@@ -49,16 +48,8 @@ public class Game {
     @OneToMany(fetch = FetchType.EAGER, mappedBy="game")
     private Set<GameCard> cards;
 
-    @ManyToMany(
-            targetEntity = Team.class,
-            cascade = { CascadeType.ALL }
-    )
-    @JoinTable(
-            name = "gameTeams",
-            joinColumns = { @JoinColumn(name = "games_id") },
-            inverseJoinColumns = { @JoinColumn(name = "teams_id") }
-    )
-    private Set<Team> teams;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy="game")
+    private Set<GameTeam> gameTeams;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy="game")
     private Set<GamePlayer> gamePlayers;
@@ -111,12 +102,12 @@ public class Game {
         this.tournament = tournament;
     }
 
-    public Set<Team> getTeams() {
-        return teams;
+    public Set<GameTeam> getGameTeams() {
+        return gameTeams;
     }
 
-    public void setTeams(Set<Team> teams) {
-        this.teams = teams;
+    public void setGameTeams(Set<GameTeam> gameTeams) {
+        this.gameTeams = gameTeams;
     }
 
     public Set<Goal> getGoals() {

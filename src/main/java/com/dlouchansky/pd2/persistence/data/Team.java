@@ -1,6 +1,7 @@
 package com.dlouchansky.pd2.persistence.data;
 
 import com.dlouchansky.pd2.persistence.data.game.Game;
+import com.dlouchansky.pd2.persistence.data.game.GameTeam;
 
 import javax.persistence.*;
 import java.util.List;
@@ -18,12 +19,8 @@ public class Team {
     @Column(name="name")
     private String name;
 
-    @ManyToMany(
-            mappedBy = "teams",
-            targetEntity = Game.class,
-            cascade = {}
-    )
-    private Set<Game> games;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy="team")
+    private Set<GameTeam> gameTeams;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy="team")
     private Set<Player> players;
@@ -44,12 +41,12 @@ public class Team {
         this.name = name;
     }
 
-    public Set<Game> getGames() {
-        return games;
+    public Set<GameTeam> getGameTeams() {
+        return gameTeams;
     }
 
-    public void setGames(Set<Game> games) {
-        this.games = games;
+    public void setGameTeams(Set<GameTeam> gameTeams) {
+        this.gameTeams = gameTeams;
     }
 
     public Set<Player> getPlayers() {
