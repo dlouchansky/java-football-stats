@@ -3,6 +3,7 @@ select
     p.firstName firstName,
     p.lastName lastName,
     t.name team,
+    t.id teamId,
     p.number number,
     coalesce(sum(gap.duration), 0) seconds
 from players p

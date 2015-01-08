@@ -3,6 +3,7 @@ select
     p.firstName firstName,
     p.lastName lastName,
     t.name team,
+    t.id teamId,
     gp.role role,
     count(distinct gp.id) goalsScored,
     gp2.role role2,

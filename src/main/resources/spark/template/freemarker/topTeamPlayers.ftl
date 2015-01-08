@@ -7,11 +7,12 @@
             <td>Number</td>
             <td>Name</td>
             <td>Games played</td>
+            <td>Games was</td>
             <td>Minutes</td>
             <td>Goals</td>
             <td>Assists</td>
-            <td>Yellow cards</td>
-            <td>Red cards</td>
+            <td><span class="label label-outline label-yellow">Yellow cards</span></td>
+            <td><span class="label label-outline label-red">Red cards</span></td>
         </tr>
         <thead>
         <tbody>
@@ -20,6 +21,7 @@
                 <td>${result.nr}</td>
                 <td>${result.name}</td>
                 <td>${result.gamesPlayed}</td>
+                <td>${result.gamesInGame}</td>
                 <td>${result.minutes}</td>
                 <td>${result.goals}</td>
                 <td>${result.assists}</td>

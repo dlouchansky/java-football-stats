@@ -3,6 +3,7 @@ select
     p.firstName,
     p.lastName,
     t.name,
+    t.id teamId,
     count(distinct gc.id) cards
 from players p
 left join teams t on p.teams_id = t.id

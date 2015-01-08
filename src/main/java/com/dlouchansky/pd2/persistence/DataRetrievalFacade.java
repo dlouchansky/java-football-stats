@@ -10,7 +10,7 @@ public interface DataRetrievalFacade {
 
     RefereeDTO getRefereeTop();
 
-    boolean checkIfExists(Integer gameTime);
+    boolean checkIfExists(Integer gameTime, String teamName);
 
     Team getById(String teamId);
 }

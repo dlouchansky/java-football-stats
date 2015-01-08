@@ -13,6 +13,8 @@ public class TopPlayerDTO {
     private Integer yellowCards;
     private Integer redCards;
     private Integer cards;
+    private Integer penalties;
+    private Integer teamId;
 
     public Integer getNr() {
         return nr;
@@ -58,7 +60,7 @@ public class TopPlayerDTO {
         return cards;
     }
 
-    public TopPlayerDTO(Integer nr, String name, String team, Integer goals, Integer assists, Integer gamesPlayed, Integer gamesInGame, String minutes, Integer yellowCards, Integer redCards, Integer cards) {
+    public TopPlayerDTO(Integer nr, String name, String team, Integer goals, Integer assists, Integer gamesPlayed, Integer gamesInGame, String minutes, Integer yellowCards, Integer redCards, Integer cards, Integer penalties, Integer teamId) {
         this.nr = nr;
         this.name = name;
         this.team = team;
@@ -70,6 +72,17 @@ public class TopPlayerDTO {
         this.yellowCards = yellowCards;
         this.redCards = redCards;
         this.cards = cards;
+        this.penalties = penalties;
+        this.teamId = teamId;
+    }
+
+    public Integer getPenalties() {
+
+        return penalties;
+    }
+
+    public Integer getTeamId() {
+        return teamId;
     }
 
     public Integer getGamesInGame() {

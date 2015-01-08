@@ -41,7 +41,7 @@ public class XmlSavingServiceImpl implements XmlSavingService {
     public boolean addXml(File file) {
         XmlGame game = parseFile(file);
 
-        if (!retrievalFacade.checkIfExists(game.date)) {
+        if (!retrievalFacade.checkIfExists(game.date, game.teams.get(0).name)) {
             saveGame(game);
             return true;
         }

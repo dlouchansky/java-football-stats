@@ -4,6 +4,8 @@ import com.dlouchansky.pd2.persistence.daos.ConcreteDAO;
 import com.dlouchansky.pd2.persistence.data.Team;
 import com.dlouchansky.pd2.persistence.data.Tournament;
 import com.dlouchansky.pd2.application.dtos.RefereeDTO;
+import com.dlouchansky.pd2.persistence.data.game.Game;
+import com.dlouchansky.pd2.persistence.data.game.GameTeam;
 import org.hibernate.Session;
 
 public class DataRetrievalFacadeImpl implements DataRetrievalFacade {
@@ -42,8 +44,19 @@ public class DataRetrievalFacadeImpl implements DataRetrievalFacade {
     }
 
     @Override
-    public boolean checkIfExists(Integer gameTime) {
-        return gameDAO.getByDate(gameTime) != null;
+    public boolean checkIfExists(Integer gameTime, String teamName) {
+        Game game = gameDAO.getByDate(gameTime);
+        if (game == null)
+            return false;
+
+        boolean exists = false;
+        for (GameTeam gameTeam : game.getGameTeams()) {
+            if (teamName.equals(gameTeam.getTeam().getName())) {
+                exists = true;
+                break;
+            }
+        }
+        return exists;
     }
 
     @Override

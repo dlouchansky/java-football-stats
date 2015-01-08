@@ -13,10 +13,18 @@
         <tbody>
         <#list results as result>
             <tr>
-                <td>${result.nr}</td>
+                <td><span class=" badge
+                <#if result.nr==1>
+                badge-red
+                <#elseif result.nr==2>
+                badge-yellow
+                <#elseif result.nr==3>
+                badge-green
+                </#if>
+                ">${result.nr}</span></td>
                 <td>${result.name}</td>
-                <td>${result.team}</td>
-                <td>${result.goals}</td>
+                <td><a href="/topTeamPlayers/${result.teamId}">${result.team}</a></td>
+                <td>${result.penalties}</td>
             </tr>
         </#list>
         </tbody>

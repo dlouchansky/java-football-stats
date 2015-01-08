@@ -40,7 +40,9 @@ public class StatsRetrievalFacadeImpl implements StatsRetrievalFacade {
             for (Object[] row : rows) {
                 String name = row[1].toString() + " " + row[2].toString();
                 Double ratio = Double.parseDouble(row[5].toString());
-                results.add(new RefereeDTO(i++, name, ratio));
+                Integer games = Integer.parseInt(row[3].toString());
+                Integer cards = Integer.parseInt(row[4].toString());
+                results.add(new RefereeDTO(i++, name, ratio, cards, games));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -167,9 +169,13 @@ public class StatsRetrievalFacadeImpl implements StatsRetrievalFacade {
             for (Object[] row : rows) {
                 String name = row[1].toString() + " " + row[2].toString();
                 String team = row[3].toString();
-                Integer cards = Integer.parseInt(row[4].toString());
-                if (cards > 0) // todo move to query
-                    results.add(new TopPlayerDTO(i++, name, team, 0, 0, 0, 0, "", 0, 0, cards));
+                Integer cards = Integer.parseInt(row[5].toString());
+                Integer teamId = Integer.parseInt(row[4].toString());
+                if (cards > 0) { // todo move to query
+                    results.add(new TopPlayerDTO(i++, name, team, 0, 0, 0, 0, "", 0, 0, cards, 0, teamId));
+                    if (i > 10)
+                        break;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -198,9 +204,10 @@ public class StatsRetrievalFacadeImpl implements StatsRetrievalFacade {
             for (Object[] row : rows) {
                 String name = row[1].toString() + " " + row[2].toString();
                 String team = row[3].toString();
-                Integer goals = Integer.parseInt(row[5].toString());
-                Integer assists = Integer.parseInt(row[7].toString());
-                results.add(new TopPlayerDTO(i++, name, team, goals, assists, 0, 0, "", 0, 0, 0));
+                Integer teamId = Integer.parseInt(row[4].toString());
+                Integer goals = Integer.parseInt(row[6].toString());
+                Integer assists = Integer.parseInt(row[8].toString());
+                results.add(new TopPlayerDTO(i++, name, team, goals, assists, 0, 0, "", 0, 0, 0, 0, teamId));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -230,8 +237,11 @@ public class StatsRetrievalFacadeImpl implements StatsRetrievalFacade {
             for (Object[] row : rows) {
                 String name = row[1].toString() + " " + row[2].toString();
                 String team = row[3].toString();
-                Double ratio = Double.parseDouble(row[6].toString());
-                results.add(new TopGoalkeeperDTO(i++, name, team, ratio, 0, 0));
+                Integer teamId = Integer.parseInt(row[4].toString());
+                Double ratio = Double.parseDouble(row[7].toString());
+                Integer missedGoals = Integer.parseInt(row[5].toString());
+                Integer games = Integer.parseInt(row[6].toString());
+                results.add(new TopGoalkeeperDTO(i++, name, team, ratio, missedGoals, games, teamId));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -268,7 +278,7 @@ public class StatsRetrievalFacadeImpl implements StatsRetrievalFacade {
                 Integer number = Integer.parseInt(row[7].toString());
                 Integer missedGoals = Integer.parseInt(row[5].toString());
                 Integer gameCount = Integer.parseInt(row[4].toString());
-                results.add(new TopGoalkeeperDTO(number, name, teamName, ratio, missedGoals, gameCount));
+                results.add(new TopGoalkeeperDTO(number, name, teamName, ratio, missedGoals, gameCount, 0));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -305,7 +315,7 @@ public class StatsRetrievalFacadeImpl implements StatsRetrievalFacade {
                 Integer yellow = Integer.parseInt(row[10].toString());
                 Integer red = Integer.parseInt(row[11].toString());
 
-                results.add(new TopPlayerDTO(number, name, "", goals, assists, participated, wasInGame, "", yellow, red, 0));
+                results.add(new TopPlayerDTO(number, name, "", goals, assists, participated, wasInGame, "", yellow, red, 0, 0, 0));
             }
 
             String sql2 = getSql("players_duration.sql");
@@ -317,7 +327,7 @@ public class StatsRetrievalFacadeImpl implements StatsRetrievalFacade {
             for (Object[] row : rows2) {
                 Integer seconds = Integer.parseInt(row[2].toString());
                 TopPlayerDTO dto = results.get(i++);
-                dto.setMinutes(secToMin(seconds));
+                dto.setMinutes(secToSecMinHour(seconds));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -346,8 +356,9 @@ public class StatsRetrievalFacadeImpl implements StatsRetrievalFacade {
             for (Object[] row : rows) {
                 String name = row[1].toString() + " " + row[2].toString();
                 String team = row[3].toString();
-                String minutes = secToMin(Integer.parseInt(row[5].toString()));
-                results.add(new TopPlayerDTO(i++, name, team, 0, 0, 0, 0, minutes, 0, 0, 0));
+                String minutes = secToSecMinHour(Integer.parseInt(row[6].toString()));
+                Integer teamId = Integer.parseInt(row[4].toString());
+                results.add(new TopPlayerDTO(i++, name, team, 0, 0, 0, 0, minutes, 0, 0, 0, 0, teamId));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -376,8 +387,9 @@ public class StatsRetrievalFacadeImpl implements StatsRetrievalFacade {
             for (Object[] row : rows) {
                 String name = row[1].toString() + " " + row[2].toString();
                 String team = row[3].toString();
-                Integer penalties = Integer.parseInt(row[5].toString());
-                results.add(new TopPlayerDTO(i++, name, team, penalties, 0, 0, 0, "", 0, 0, 0));
+                Integer penalties = Integer.parseInt(row[6].toString());
+                Integer teamId = Integer.parseInt(row[4].toString());
+                results.add(new TopPlayerDTO(i++, name, team, 0, 0, 0, 0, "", 0, 0, 0, penalties, teamId));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -397,10 +409,13 @@ public class StatsRetrievalFacadeImpl implements StatsRetrievalFacade {
         return String.join(" ", fileContents);
     }
 
-    protected String secToMin(Integer secFull) {
-        int min = secFull / 60;
-        int sec = secFull % 60;
-        return "" + min + ":" + (sec > 9 ? sec : "0" + sec);
+
+    protected String secToSecMinHour(Integer secFull) {
+        int hour = secFull / 3600;
+
+        int min = (secFull - (3600 * hour)) / 60;
+        int sec = (secFull - (3600 * hour)) % 60;
+        return "" + hour + ":" + (min > 9 ? min : "0" + min) + ":" + (sec > 9 ? sec : "0" + sec);
     }
 
 }
