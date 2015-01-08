@@ -17,7 +17,9 @@ public interface DataCreationFacade {
 
     Player createPlayer(String firstName, String lastName, Integer number, Team team, Role role);
 
-    Game createGame(Integer date, Integer watchers, Tournament tournament, Venue venue, Set<Team> gameTeams);
+    Game createGame(Integer date, Integer watchers, Tournament tournament, Venue venue, GamePart winGamePart);
+
+    GameTeam createGameTeam(Game game, Team team, boolean isWinner);
 
     GamePlayer createGamePlayer(Player player, Game game, Integer duration);
 

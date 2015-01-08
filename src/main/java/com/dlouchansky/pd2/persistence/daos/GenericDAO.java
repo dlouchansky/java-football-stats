@@ -81,12 +81,13 @@ public class GenericDAO<T> {
         }
     }
 
-    public T getById(Long id) {
+    public T getById(Integer id) {
         Session session = null;
         T object = null;
         try {
             session = HibernateUtil.getSessionFactory().openSession();
             object = (T) session.load(getPersistentClass(), id);
+            session.update(object);
         } catch (Exception e) {
             logger.error(e.getMessage());
         } finally {

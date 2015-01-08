@@ -7,7 +7,7 @@ import java.util.Map;
 public class XmlTeam {
     public final String name;
     public final List<XmlPlayer> players;
-    public final Map<Integer, Integer> gamePlayerTimeByIds;
+    public final Map<Integer, Integer> gamePlayerTimeByNumber;
     public final List<XmlCard> cards;
     public final List<XmlGoal> goals;
     public final Map<Integer, Integer> goalkeeperNumberByTime;
@@ -18,7 +18,7 @@ public class XmlTeam {
         this.players = Collections.unmodifiableList(players);
         this.cards = Collections.unmodifiableList(cards);
         this.goals = Collections.unmodifiableList(goals);
-        this.gamePlayerTimeByIds = Collections.unmodifiableMap(gamePlayerTimeByNumber);
+        this.gamePlayerTimeByNumber = Collections.unmodifiableMap(gamePlayerTimeByNumber);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class XmlTeam {
         return "XmlTeam{" +
                 "name='" + name + '\'' +
                 ", players=" + players +
-                ", gamePlayerTimeByIds=" + gamePlayerTimeByIds +
+                ", gamePlayerTimeByNumber=" + gamePlayerTimeByNumber +
                 ", cards=" + cards +
                 ", goals=" + goals +
                 '}';

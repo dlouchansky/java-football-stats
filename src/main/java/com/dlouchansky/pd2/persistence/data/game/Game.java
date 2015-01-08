@@ -13,11 +13,12 @@ import java.util.Set;
 @Entity
 @Table(name="games")
 public class Game {
-    public Game(Integer date, Venue venue, Integer watchers, Tournament tournament) {
+    public Game(Integer date, Venue venue, Integer watchers, Tournament tournament, GamePart winGamePart) {
         this.date = date;
         this.venue = venue;
         this.watchers = watchers;
         this.tournament = tournament;
+        this.winGamePart = winGamePart;
     }
 
     @Id
@@ -38,6 +39,18 @@ public class Game {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tournaments_id")
     private Tournament tournament;
+
+    public GamePart getWinGamePart() {
+        return winGamePart;
+    }
+
+    public void setWinGamePart(GamePart winGamePart) {
+        this.winGamePart = winGamePart;
+    }
+
+    @Column(name = "winGamePart")
+    @Enumerated(EnumType.ORDINAL)
+    private GamePart winGamePart;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy="game")
     private Set<Goal> goals;

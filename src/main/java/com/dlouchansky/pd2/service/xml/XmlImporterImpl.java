@@ -208,13 +208,13 @@ public class XmlImporterImpl implements XmlImporter {
             if (xmlPlayerTimeByNumber.get(nr1) == null) {
                 xmlPlayerTimeByNumber.put(nr1, laiks);
             } else {
-                xmlPlayerTimeByNumber.put(nr1, xmlPlayerTimeByNumber.get(nr1) + (gameDuration - laiks));
+                xmlPlayerTimeByNumber.put(nr1, xmlPlayerTimeByNumber.get(nr1) - (gameDuration - laiks));
             }
 
             if (xmlPlayerTimeByNumber.get(nr2) == null) {
                 xmlPlayerTimeByNumber.put(nr2, gameDuration - laiks);
             } else {
-                xmlPlayerTimeByNumber.put(nr2, xmlPlayerTimeByNumber.get(nr2) - (gameDuration - laiks));
+                xmlPlayerTimeByNumber.put(nr2, xmlPlayerTimeByNumber.get(nr2) + (gameDuration - laiks));
             }
         });
         return xmlPlayerTimeByNumber;

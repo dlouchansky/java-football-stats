@@ -18,6 +18,8 @@
                         <li><a href="/topGoalkeepers">Goalkeeper top</a></li>
                         <li><a href="/referees">Referee top</a></li>
                         <li><a href="/rude">Rude player top</a></li>
+                        <li><a href="/duration">Players by duration</a></li>
+                        <li><a href="/penalties">Players by penalties</a></li>
                     </ul>
                 </nav>
             </div>

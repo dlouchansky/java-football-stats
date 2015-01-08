@@ -24,6 +24,8 @@
         <mapping class="com.dlouchansky.pd2.persistence.data.game.GameReferee" />
         <mapping class="com.dlouchansky.pd2.persistence.data.game.Goal" />
         <mapping class="com.dlouchansky.pd2.persistence.data.game.GoalPlayer" />
+        <mapping class="com.dlouchansky.pd2.persistence.data.game.GamePlayer" />
+        <mapping class="com.dlouchansky.pd2.persistence.data.game.GameTeam" />
 
     </session-factory>
 </hibernate-configuration>

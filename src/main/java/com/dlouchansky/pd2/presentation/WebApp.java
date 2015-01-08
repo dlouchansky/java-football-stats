@@ -99,6 +99,20 @@ public class WebApp {
             return new ModelAndView(model, "rudePlayers.ftl");
         }, new FreeMarkerEngine());
 
+        get("/duration", (req, res) -> {
+            Map<String, Object> model = new HashMap<>();
+            List<TopPlayerDTO> results = statsService.getForPlayersByDuration();
+            model.put("results", results);
+            return new ModelAndView(model, "topDuration.ftl");
+        }, new FreeMarkerEngine());
+
+        get("/penalties", (req, res) -> {
+            Map<String, Object> model = new HashMap<>();
+            List<TopPlayerDTO> results = statsService.getForPlayersByPenalties();
+            model.put("results", results);
+            return new ModelAndView(model, "topPenalties.ftl");
+        }, new FreeMarkerEngine());
+
         get("/topTeamPlayers/:teamId", (req, res) -> {
             Map<String, Object> model = new HashMap<>();
             Team team = dataRetrievalFacade.getById(req.params("teamId"));
@@ -136,7 +150,6 @@ public class WebApp {
 
             reqParts.forEach(part -> {
                 if ("filesToUpload".equals(part.getName())) {
-                    //todo make it in job
                     MultiPartInputStreamParser.MultiPart partMulti = (MultiPartInputStreamParser.MultiPart) part;
                     String contentDispositionFilename = partMulti.getContentDispositionFilename();
                     File dest = new File("/tmp/xmls/" + System.currentTimeMillis() + contentDispositionFilename);

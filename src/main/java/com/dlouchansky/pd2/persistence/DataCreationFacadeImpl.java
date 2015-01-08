@@ -21,6 +21,7 @@ public class DataCreationFacadeImpl implements DataCreationFacade {
     private final ConcreteDAO.GoalPlayerDAO goalPlayerDAO;
     private final ConcreteDAO.TournamentDAO tournamentDAO;
     private final ConcreteDAO.GamePlayerDAO gamePlayerDAO;
+    private final ConcreteDAO.GameTeamDAO gameTeamDAO;
 
     public DataCreationFacadeImpl(
             ConcreteDAO.VenueDAO venueDAO,
@@ -33,7 +34,8 @@ public class DataCreationFacadeImpl implements DataCreationFacade {
             ConcreteDAO.GoalDAO goalDAO,
             ConcreteDAO.GoalPlayerDAO goalPlayerDAO,
             ConcreteDAO.TournamentDAO tournamentDAO,
-            ConcreteDAO.GamePlayerDAO gamePlayerDAO
+            ConcreteDAO.GamePlayerDAO gamePlayerDAO,
+            ConcreteDAO.GameTeamDAO gameTeamDAO
     ) {
         this.venueDAO = venueDAO;
         this.refereeDAO = refereeDAO;
@@ -46,6 +48,7 @@ public class DataCreationFacadeImpl implements DataCreationFacade {
         this.goalPlayerDAO = goalPlayerDAO;
         this.tournamentDAO = tournamentDAO;
         this.gamePlayerDAO = gamePlayerDAO;
+        this.gameTeamDAO = gameTeamDAO;
     }
 
     @Override
@@ -105,13 +108,20 @@ public class DataCreationFacadeImpl implements DataCreationFacade {
         return newPlayer;
     }
 
-    public Game createGame(Integer date, Integer watchers, Tournament tournament, Venue venue, Set<Team> gameTeams) {
-        Game game = new Game(date, venue, watchers, tournament, gameTeams);
+    public Game createGame(Integer date, Integer watchers, Tournament tournament, Venue venue, GamePart winGamePart) {
+        Game game = new Game(date, venue, watchers, tournament, winGamePart);
         gameDAO.add(game);
         tournamentDAO.refresh(tournament);
         venueDAO.refresh(venue);
-        gameTeams.forEach(teamDAO::refresh);
         return game;
+    }
+
+    public GameTeam createGameTeam(Game game, Team team, boolean isWinner) {
+        GameTeam gameTeam = new GameTeam(game, team, isWinner);
+        gameTeamDAO.add(gameTeam);
+        gameDAO.refresh(game);
+        teamDAO.refresh(team);
+        return gameTeam;
     }
 
     @Override

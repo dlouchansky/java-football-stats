@@ -34,12 +34,12 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<TopPlayerDTO> getForTopPlayers(Team team) {
-        return null;
+        return statsRetrievalFacade.getPlayersForTeam(team);
     }
 
     @Override
     public List<TopGoalkeeperDTO> getForTopGoalkeepers(Team team) {
-        return null;
+        return statsRetrievalFacade.getGoalkeepersForTeam(team);
     }
 
     @Override
@@ -47,9 +47,18 @@ public class StatsServiceImpl implements StatsService {
         return statsRetrievalFacade.getRefereesByAverageCardsPerGame(10);
     }
 
-
     @Override
     public List<TopPlayerDTO> getForRudePlayers() {
         return statsRetrievalFacade.getPlayersByReceivedCards();
+    }
+
+    @Override
+    public List<TopPlayerDTO> getForPlayersByDuration() {
+        return statsRetrievalFacade.getPlayersByDuration(10);
+    }
+
+    @Override
+    public List<TopPlayerDTO> getForPlayersByPenalties() {
+        return statsRetrievalFacade.getPlayersByScoredPenalties(10);
     }
 }

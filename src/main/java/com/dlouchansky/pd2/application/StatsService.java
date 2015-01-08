@@ -27,4 +27,8 @@ public interface StatsService {
     List<RefereeDTO> getForRoughestReferees();
 
     List<TopPlayerDTO> getForRudePlayers();
+
+    List<TopPlayerDTO> getForPlayersByDuration();
+
+    List<TopPlayerDTO> getForPlayersByPenalties();
 }

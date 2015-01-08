@@ -11,7 +11,7 @@
             <td>Losses main time</td>
             <td>Wins extra time</td>
             <td>Losses extra time</td>
-            <td>Goals cored</td>
+            <td>Goals scored</td>
             <td>Goals missed</td>
             <td>Player stats</td>
         </tr>

@@ -3,12 +3,27 @@ package com.dlouchansky.pd2.persistence.data.game;
 
 import com.dlouchansky.pd2.persistence.data.Team;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name="gameTeams")
 public class GameTeam {
 
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private Integer id;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "games_id")
     private Game game;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "teams_id")
     private Team team;
+
+    @Column(name = "isWinner")
     private Boolean isWinner;
-    private GamePart winGamePart;
 
     public Game getGame() {
         return game;
@@ -22,16 +37,30 @@ public class GameTeam {
         return isWinner;
     }
 
-    public GamePart getWinGamePart() {
-        return winGamePart;
+    public void setGame(Game game) {
+        this.game = game;
     }
 
-    public GameTeam(Game game, Team team, Boolean isWinner, GamePart winGamePart) {
+    public Integer getId() {
+        return id;
+    }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
+    public void setIsWinner(Boolean isWinner) {
+        this.isWinner = isWinner;
+    }
+
+    public GameTeam(Game game, Team team, Boolean isWinner) {
         this.game = game;
         this.team = team;
         this.isWinner = isWinner;
-        this.winGamePart = winGamePart;
     }
 
     public GameTeam() {

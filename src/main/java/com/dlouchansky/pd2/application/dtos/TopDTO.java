@@ -53,6 +53,10 @@ public class TopDTO {
         return goalsMissed;
     }
 
+    public void setNr(Integer nr) {
+        this.nr = nr;
+    }
+
     public TopDTO(
             Integer nr,
             Integer id,

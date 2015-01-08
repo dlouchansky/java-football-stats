@@ -1,9 +1,6 @@
 package com.dlouchansky.pd2;
 
-import com.dlouchansky.pd2.application.StatsService;
-import com.dlouchansky.pd2.application.StatsServiceMock;
-import com.dlouchansky.pd2.application.XmlSavingService;
-import com.dlouchansky.pd2.application.XmlSavingServiceImpl;
+import com.dlouchansky.pd2.application.*;
 import com.dlouchansky.pd2.persistence.*;
 import com.dlouchansky.pd2.persistence.daos.ConcreteDAO;
 import com.dlouchansky.pd2.presentation.WebApp;
@@ -19,7 +16,7 @@ public class App {
     public static Logger logger = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) {
-        //todo find normal DI toolx
+        //todo find normal DI tool
         ConcreteDAO.TournamentDAO tournamentDAO = new ConcreteDAO.TournamentDAO();
         ConcreteDAO.VenueDAO venueDAO = new ConcreteDAO.VenueDAO();
         ConcreteDAO.RefereeDAO refereeDAO = new ConcreteDAO.RefereeDAO();
@@ -31,9 +28,10 @@ public class App {
         ConcreteDAO.GoalDAO goalDAO = new ConcreteDAO.GoalDAO();
         ConcreteDAO.GoalPlayerDAO goalPlayerDAO = new ConcreteDAO.GoalPlayerDAO();
         ConcreteDAO.GamePlayerDAO gamePlayerDAO = new ConcreteDAO.GamePlayerDAO();
+        ConcreteDAO.GameTeamDAO gameTeamDAO = new ConcreteDAO.GameTeamDAO();
 
         XmlImporterImpl xmlImporter = new XmlImporterImpl();
-        StatsService statsService = new StatsServiceMock();
+        StatsService statsService = new StatsServiceImpl(new StatsRetrievalFacadeImpl());
 
         FreeMarkerEngine freeMarkerEngine = new FreeMarkerEngine();
 
@@ -48,7 +46,8 @@ public class App {
                 goalDAO,
                 goalPlayerDAO,
                 tournamentDAO,
-                gamePlayerDAO);
+                gamePlayerDAO,
+                gameTeamDAO);
 
         DataManipulationFacade manipulationFacade = new DataManipulationFacadeImpl(
                 teamDAO,

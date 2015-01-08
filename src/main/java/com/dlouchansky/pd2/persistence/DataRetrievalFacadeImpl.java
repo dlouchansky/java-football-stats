@@ -48,7 +48,7 @@ public class DataRetrievalFacadeImpl implements DataRetrievalFacade {
 
     @Override
     public Team getById(String teamId) {
-        return teamDAO.getById(Long.parseLong(teamId));
+        return teamDAO.getById(Integer.parseInt(teamId));
     }
 
 

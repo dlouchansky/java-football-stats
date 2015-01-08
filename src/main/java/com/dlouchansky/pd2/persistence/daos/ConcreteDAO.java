@@ -42,6 +42,9 @@ public class ConcreteDAO {
     public static class GoalPlayerDAO extends GenericDAO<GoalPlayer> {
     }
 
+    public static class GameTeamDAO extends GenericDAO<GameTeam> {
+    }
+
     public static class GameCardDAO extends GenericDAO<GameCard> {
         public GameCard getByPlayerAndGame(Player player, Game game) {
             Session session = null;
